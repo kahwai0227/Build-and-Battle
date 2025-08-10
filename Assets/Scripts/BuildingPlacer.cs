@@ -124,8 +124,13 @@ public class BuildingPlacer : MonoBehaviour
             yield return null;
         }
 
+        // After construction is complete:
         if (rend != null)
             rend.material.color = Color.white;
+
+        Turret turret = building.GetComponent<Turret>();
+        if (turret != null)
+            turret.isConstructed = true;
 
         Destroy(barObj);
         worker.isBusy = false;

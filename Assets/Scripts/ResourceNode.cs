@@ -16,7 +16,7 @@ public class ResourceNode : MonoBehaviour
     void OnMouseDown()
     {
         // Find the first idle worker and assign this resource
-        WorkerDrag[] workers = FindObjectsOfType<WorkerDrag>();
+        WorkerDrag[] workers = FindObjectsByType<WorkerDrag>(FindObjectsSortMode.None);
         foreach (var worker in workers)
         {
             if (worker.state == WorkerDrag.WorkerState.Idle)

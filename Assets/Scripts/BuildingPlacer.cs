@@ -14,6 +14,13 @@ public class BuildingPlacer : MonoBehaviour
 
     void Update()
     {
+        if (UnityEngine.EventSystems.EventSystem.current != null &&
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() &&
+            UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
+        {
+            return; // Ignore clicks over UI controls
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             // Raycast from mouse to ground

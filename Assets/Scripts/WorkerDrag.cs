@@ -36,6 +36,26 @@ public class WorkerDrag : MonoBehaviour
         return targetPosition + direction * (targetRadius + margin);
     }
 
+    private Vector3 FindFreeBesidePoint(Vector3 targetPosition, float targetRadius, float margin = 1.5f)
+    {
+        float checkRadius = 0.75f; // Half the worker's width, adjust as needed
+        int steps = 36; // 360 / 10 degrees
+
+        for (int i = 0; i < steps; i++)
+        {
+            float angle = i * 10 * Mathf.Deg2Rad;
+            Vector3 dir = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+            Vector3 candidate = targetPosition + dir * (targetRadius + margin);
+
+            Collider[] hits = Physics.OverlapSphere(candidate, checkRadius, LayerMask.GetMask("Worker"));
+            if (hits.Length == 0)
+                return candidate;
+        }
+
+        // If all are occupied, just use the first direction
+        return targetPosition + Vector3.right * (targetRadius + margin);
+    }
+
     void Update()
     {
         switch (state)
@@ -71,7 +91,7 @@ public class WorkerDrag : MonoBehaviour
     {
         assignedResource = resource;
         float resourceRadius = resource.GetComponent<Collider>()?.bounds.extents.magnitude ?? 2f;
-        Vector3 besidePoint = GetBesidePoint(resource.transform.position, resourceRadius);
+        Vector3 besidePoint = FindFreeBesidePoint(resource.transform.position, resourceRadius);
         agent.SetDestination(besidePoint);
         state = WorkerState.MovingToResource;
         isBusy = true;

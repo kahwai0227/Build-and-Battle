@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 937313754761387543}
   - component: {fileID: 6397511748251462311}
   - component: {fileID: 8874997194570474237}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Building
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,3 +125,4 @@ MonoBehaviour:
   fireRate: 1
   projectilePrefab: {fileID: 0}
   firePoint: {fileID: 0}
+  isConstructed: 0

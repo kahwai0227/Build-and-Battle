@@ -8,10 +8,14 @@ public class WorkerDrag : MonoBehaviour
 
     public ResourceNode assignedResource;
     public GameObject townhall;
-    public float collectTime = 2f;
+    public float collectTime = 2f; // Time can stay the same
     public int carryAmount = 10;
     private NavMeshAgent agent;
     private bool isCarrying = false;
+    public bool isBusy = false;
+
+    // If you have movement speed:
+    public float moveSpeed = 15f; // 3f * 5
 
     void Start()
     {
@@ -24,14 +28,14 @@ public class WorkerDrag : MonoBehaviour
         switch (state)
         {
             case WorkerState.MovingToResource:
-                if (assignedResource && Vector3.Distance(transform.position, assignedResource.transform.position) < 1.5f)
+                if (assignedResource && Vector3.Distance(transform.position, assignedResource.transform.position) < 7.5f) // 1.5f * 5
                 {
                     state = WorkerState.Collecting;
                     StartCoroutine(CollectResource());
                 }
                 break;
             case WorkerState.MovingToTownhall:
-                if (townhall && Vector3.Distance(transform.position, townhall.transform.position) < 1.5f)
+                if (townhall && Vector3.Distance(transform.position, townhall.transform.position) < 7.5f) // 1.5f * 5
                 {
                     state = WorkerState.Delivering;
                     StartCoroutine(DeliverResource());
@@ -45,6 +49,11 @@ public class WorkerDrag : MonoBehaviour
         assignedResource = resource;
         agent.SetDestination(resource.transform.position);
         state = WorkerState.MovingToResource;
+    }
+
+    public void GoTo(Vector3 target)
+    {
+        GetComponent<NavMeshAgent>().SetDestination(target);
     }
 
     private System.Collections.IEnumerator CollectResource()
@@ -73,5 +82,11 @@ public class WorkerDrag : MonoBehaviour
         {
             state = WorkerState.Idle;
         }
+    }
+
+    private void UpdateBarHeight(Collider col, GameObject barObj)
+    {
+        float barHeight = col != null ? col.bounds.extents.y * 2.5f : 10f; // 2.5f gives more margin for larger objects
+        barObj.transform.localPosition = new Vector3(0, barHeight, 0);
     }
 }

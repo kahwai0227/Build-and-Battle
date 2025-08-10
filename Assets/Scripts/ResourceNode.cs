@@ -1,25 +1,39 @@
 using UnityEngine;
 
+public enum ResourceType { Wood, Gold }
+
 public class ResourceNode : MonoBehaviour
 {
+    public ResourceType resourceType = ResourceType.Wood;
     public int resourceAmount = 100;
+    public int collectPerTrip = 10;
 
-    public void Collect(int amount)
+    public bool Collect()
     {
-        resourceAmount -= amount;
-        if (resourceAmount <= 0)
+        if (resourceAmount >= collectPerTrip)
         {
-            Destroy(gameObject);
+            resourceAmount -= collectPerTrip;
+            return true;
         }
+        else if (resourceAmount > 0)
+        {
+            resourceAmount = 0;
+            return true;
+        }
+        return false;
+    }
+
+    public bool IsDepleted()
+    {
+        return resourceAmount <= 0;
     }
 
     void OnMouseDown()
     {
-        // Find the first idle worker and assign this resource
         WorkerDrag[] workers = FindObjectsByType<WorkerDrag>(FindObjectsSortMode.None);
         foreach (var worker in workers)
         {
-            if (worker.state == WorkerDrag.WorkerState.Idle)
+            if (!worker.isBusy)
             {
                 worker.AssignResource(this);
                 break;

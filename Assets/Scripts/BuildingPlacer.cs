@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BuildingPlacer : MonoBehaviour
@@ -8,6 +9,8 @@ public class BuildingPlacer : MonoBehaviour
     public int goldCost = 50;
     public int woodCost = 50;
     public float constructionTime = 10f; // seconds
+
+    private Dictionary<GameObject, bool> constructionCancelled = new Dictionary<GameObject, bool>();
 
     void Update()
     {
@@ -82,7 +85,8 @@ public class BuildingPlacer : MonoBehaviour
                                 worker.GoTo(besidePointFinal);
 
                                 // Start construction coroutine, pass besidePoint
-                                StartCoroutine(ConstructBuilding(building, worker, besidePointFinal));
+                                Coroutine coroutine = StartCoroutine(ConstructBuilding(building, worker, besidePointFinal));
+                                worker.StartConstruction(building, coroutine, goldCost, woodCost);
                             }
                         }
                         else
@@ -111,13 +115,26 @@ public class BuildingPlacer : MonoBehaviour
         barObj.transform.localPosition = new Vector3(building.transform.position.x, barHeight, building.transform.position.z);
         var slider = barObj.GetComponentInChildren<UnityEngine.UI.Slider>();
 
+        // Register cancellation flag
+        constructionCancelled[building] = false;
+        worker.SetConstructionProgressBar(barObj);
+
         // Wait for worker to arrive at besidePoint
         while (Vector3.Distance(worker.transform.position, besidePoint) > 3f)
+        {
+            if (constructionCancelled[building]) yield break;
             yield return null;
+        }
 
         float elapsed = 0f;
         while (elapsed < constructionTime)
         {
+            if (constructionCancelled[building])
+            {
+                // Clean up if cancelled
+                if (barObj != null) Destroy(barObj);
+                yield break;
+            }
             elapsed += Time.deltaTime;
             if (slider != null)
                 slider.value = Mathf.Clamp01(elapsed / constructionTime);
@@ -133,7 +150,18 @@ public class BuildingPlacer : MonoBehaviour
             turret.isConstructed = true;
 
         Destroy(barObj);
+
+        // Reset worker status
         worker.isBusy = false;
+        worker.state = WorkerDrag.WorkerState.Idle;
+        worker.currentBuilding = null;
+        worker.constructionCoroutine = null;
+        worker.lastGoldCost = 0;
+        worker.lastWoodCost = 0;
+        worker.constructionProgressBar = null;
+
+        constructionCancelled.Remove(building);
+        yield break;
     }
 
     private WorkerDrag FindNearestIdleWorker(Vector3 position)

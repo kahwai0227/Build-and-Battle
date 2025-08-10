@@ -3,7 +3,7 @@ using TMPro;
 
 public class ResourceUI : MonoBehaviour
 {
-    public TMP_Text resourceTMPText; // Assign in Inspector
+    public TMP_Text resourceTMPText;
 
     void Update()
     {

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 
 public class WorkerDrag : MonoBehaviour
 {
@@ -8,19 +9,31 @@ public class WorkerDrag : MonoBehaviour
 
     public ResourceNode assignedResource;
     public GameObject townhall;
-    public float collectTime = 2f; // Time can stay the same
+    public float collectTime = 2f;
     public int carryAmount = 10;
     private NavMeshAgent agent;
     private bool isCarrying = false;
     public bool isBusy = false;
+    public float moveSpeed = 15f;
 
-    // If you have movement speed:
-    public float moveSpeed = 15f; // 3f * 5
+    public Coroutine constructionCoroutine;
+    public GameObject currentBuilding;
+    public int lastGoldCost;
+    public int lastWoodCost;
+    public GameObject constructionProgressBar; // Reference to the construction progress bar object
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        agent.speed = moveSpeed;
         townhall = GameObject.FindWithTag("Townhall");
+    }
+
+    private Vector3 GetBesidePoint(Vector3 targetPosition, float targetRadius, float margin = 1.5f)
+    {
+        Vector3 direction = (transform.position - targetPosition).normalized;
+        if (direction == Vector3.zero) direction = Vector3.right;
+        return targetPosition + direction * (targetRadius + margin);
     }
 
     void Update()
@@ -28,17 +41,27 @@ public class WorkerDrag : MonoBehaviour
         switch (state)
         {
             case WorkerState.MovingToResource:
-                if (assignedResource && Vector3.Distance(transform.position, assignedResource.transform.position) < 7.5f) // 1.5f * 5
+                if (assignedResource)
                 {
-                    state = WorkerState.Collecting;
-                    StartCoroutine(CollectResource());
+                    float resourceRadius = assignedResource.GetComponent<Collider>()?.bounds.extents.magnitude ?? 2f;
+                    Vector3 besidePoint = GetBesidePoint(assignedResource.transform.position, resourceRadius);
+                    if (Vector3.Distance(transform.position, besidePoint) < 1.5f)
+                    {
+                        state = WorkerState.Collecting;
+                        StartCoroutine(CollectResource());
+                    }
                 }
                 break;
             case WorkerState.MovingToTownhall:
-                if (townhall && Vector3.Distance(transform.position, townhall.transform.position) < 7.5f) // 1.5f * 5
+                if (townhall)
                 {
-                    state = WorkerState.Delivering;
-                    StartCoroutine(DeliverResource());
+                    float townhallRadius = townhall.GetComponent<Collider>()?.bounds.extents.magnitude ?? 2f;
+                    Vector3 besidePoint = GetBesidePoint(townhall.transform.position, townhallRadius);
+                    if (Vector3.Distance(transform.position, besidePoint) < 1.5f)
+                    {
+                        state = WorkerState.Delivering;
+                        StartCoroutine(DeliverResource());
+                    }
                 }
                 break;
         }
@@ -47,46 +70,140 @@ public class WorkerDrag : MonoBehaviour
     public void AssignResource(ResourceNode resource)
     {
         assignedResource = resource;
-        agent.SetDestination(resource.transform.position);
+        float resourceRadius = resource.GetComponent<Collider>()?.bounds.extents.magnitude ?? 2f;
+        Vector3 besidePoint = GetBesidePoint(resource.transform.position, resourceRadius);
+        agent.SetDestination(besidePoint);
         state = WorkerState.MovingToResource;
+        isBusy = true;
     }
 
-    public void GoTo(Vector3 target)
+    public void GoTo(Vector3 position)
     {
-        GetComponent<NavMeshAgent>().SetDestination(target);
-    }
-
-    private System.Collections.IEnumerator CollectResource()
-    {
-        yield return new WaitForSeconds(collectTime);
-        if (assignedResource)
+        // If you have a NavMeshAgent, use it; otherwise, move directly
+        var agent = GetComponent<NavMeshAgent>();
+        if (agent != null)
         {
-            assignedResource.Collect(carryAmount);
-            isCarrying = true;
-            agent.SetDestination(townhall.transform.position);
-            state = WorkerState.MovingToTownhall;
+            agent.SetDestination(position);
+        }
+        else
+        {
+            // Simple fallback: teleport instantly (replace with your movement logic)
+            transform.position = position;
         }
     }
 
+    // In CollectResource, after collecting, go to beside point of townhall
+    private System.Collections.IEnumerator CollectResource()
+    {
+        yield return new WaitForSeconds(collectTime);
+        if (assignedResource && !assignedResource.IsDepleted())
+        {
+            assignedResource.Collect();
+            isCarrying = true;
+            float townhallRadius = townhall.GetComponent<Collider>()?.bounds.extents.magnitude ?? 2f;
+            Vector3 besidePoint = GetBesidePoint(townhall.transform.position, townhallRadius);
+            agent.SetDestination(besidePoint);
+            state = WorkerState.MovingToTownhall;
+        }
+        else
+        {
+            state = WorkerState.Idle;
+            isBusy = false;
+        }
+    }
+
+    // In DeliverResource, after delivering, go to beside point of resource node
     private System.Collections.IEnumerator DeliverResource()
     {
         yield return new WaitForSeconds(1f);
-        ResourceManager.Instance.AddGold(carryAmount); // Or AddWood, depending on resource type
-        isCarrying = false;
-        if (assignedResource)
+        if (assignedResource != null)
         {
-            agent.SetDestination(assignedResource.transform.position);
+            if (assignedResource.resourceType == ResourceType.Wood)
+                ResourceManager.Instance.AddWood(carryAmount);
+            else if (assignedResource.resourceType == ResourceType.Gold)
+                ResourceManager.Instance.AddGold(carryAmount);
+        }
+        isCarrying = false;
+        if (assignedResource && !assignedResource.IsDepleted())
+        {
+            float resourceRadius = assignedResource.GetComponent<Collider>()?.bounds.extents.magnitude ?? 2f;
+            Vector3 besidePoint = GetBesidePoint(assignedResource.transform.position, resourceRadius);
+            agent.SetDestination(besidePoint);
             state = WorkerState.MovingToResource;
         }
         else
         {
             state = WorkerState.Idle;
+            isBusy = false;
         }
     }
 
-    private void UpdateBarHeight(Collider col, GameObject barObj)
+    // Call this when starting construction (from BuildingPlacer or similar):
+    public void StartConstruction(GameObject building, Coroutine coroutine, int goldCost, int woodCost)
     {
-        float barHeight = col != null ? col.bounds.extents.y * 2.5f : 10f; // 2.5f gives more margin for larger objects
-        barObj.transform.localPosition = new Vector3(0, barHeight, 0);
+        currentBuilding = building;
+        constructionCoroutine = coroutine;
+        lastGoldCost = goldCost;
+        lastWoodCost = woodCost;
+        state = WorkerState.Collecting; // Or a custom "Building" state if you have one
+        isBusy = true;
+    }
+
+    public void SetConstructionProgressBar(GameObject bar)
+    {
+        constructionProgressBar = bar;
+    }
+
+    void OnMouseDown()
+    {
+        // If building, stop construction, refund 50%, and destroy building and progress bar
+        if (state == WorkerState.Collecting && currentBuilding != null && constructionCoroutine != null)
+        {
+            StopCoroutine(constructionCoroutine);
+            ResourceManager.Instance.AddGold(lastGoldCost / 2);
+            ResourceManager.Instance.AddWood(lastWoodCost / 2);
+
+            // Destroy the progress bar first
+            if (constructionProgressBar != null)
+            {
+                Destroy(constructionProgressBar);
+                constructionProgressBar = null;
+            }
+
+            // Signal cancellation to the coroutine
+            if (currentBuilding != null)
+            {
+                var placer = FindFirstObjectByType<BuildingPlacer>();
+                if (placer != null)
+                {
+                    var dict = placer.GetType().GetField("constructionCancelled", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(placer) as Dictionary<GameObject, bool>;
+                    if (dict != null && dict.ContainsKey(currentBuilding))
+                        dict[currentBuilding] = true;
+                }
+            }
+
+            Destroy(currentBuilding);
+
+            // Reset state
+            currentBuilding = null;
+            constructionCoroutine = null;
+            lastGoldCost = 0;
+            lastWoodCost = 0;
+            state = WorkerState.Idle;
+            isBusy = false;
+            if (agent != null)
+                agent.ResetPath();
+            return;
+        }
+
+        // Otherwise, cancel any other task as before
+        StopAllCoroutines();
+        state = WorkerState.Idle;
+        isBusy = false;
+        assignedResource = null;
+        isCarrying = false; // <-- Add this line to clear carried resource
+        if (agent != null)
+            agent.ResetPath();
     }
 }

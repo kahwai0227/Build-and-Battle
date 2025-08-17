@@ -1,14 +1,13 @@
 using UnityEngine;
-using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    public float speed = 3f;
+    public float speed = 10f;
     public int health = 10;
     private Transform target;
     public EnemySpawner spawner; // Add this at the top
 
-    void Start()
+    public virtual void Start()
     {
         GameObject townhall = GameObject.FindWithTag("Townhall");
         if (townhall != null)
@@ -26,11 +25,9 @@ public class Enemy : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Enemy triggered with: " + other.name);
         TownhallHealth townhall = other.GetComponent<TownhallHealth>();
         if (townhall != null)
         {
-            Debug.Log("Townhall hit!");
             townhall.TakeDamage(10);
             if (spawner != null)
                 spawner.OnEnemyDefeated();

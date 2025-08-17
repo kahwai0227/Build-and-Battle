@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject enemyPrefab;
+    public GameObject[] enemyPrefabs; // Assign all variants in Inspector
     public Transform[] spawnPoints;
     public GameObject townhall;
     public float timeBetweenWaves = 20f;
@@ -14,7 +14,6 @@ public class EnemySpawner : MonoBehaviour
     private int currentWave = 0;
     private int spawnedEnemies = 0;
     private int defeatedEnemies = 0;
-
     void Start()
     {
         StartCoroutine(SpawnWaves());
@@ -33,7 +32,10 @@ public class EnemySpawner : MonoBehaviour
                 Vector3 dir = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
                 Vector3 spawnPos = townhall.transform.position + dir * spawnDistance;
 
-                GameObject enemyObj = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+                // Pick a random enemy variant
+                GameObject prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+                GameObject enemyObj = Instantiate(prefab, spawnPos, Quaternion.identity);
+
                 Enemy enemy = enemyObj.GetComponent<Enemy>();
                 if (enemy != null)
                 {
@@ -58,7 +60,8 @@ public class EnemySpawner : MonoBehaviour
         Vector3 dir = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
         Vector3 spawnPos = townhall.transform.position + dir * spawnDistance;
 
-        GameObject enemyObj = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+        GameObject prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+        Instantiate(prefab, spawnPos, Quaternion.identity);
     }
 
     // Call this from Enemy when destroyed

@@ -15,6 +15,14 @@ public class Projectile : MonoBehaviour
 
     void Start()
     {
+        // Rotate the capsule so it faces the direction of travel and lays flat
+        if (direction != Vector3.zero)
+        {
+            // Look in the direction, then rotate 90 degrees around local X to lay flat
+            transform.rotation = Quaternion.LookRotation(direction);
+            transform.Rotate(90f, 0f, 0f, Space.Self);
+        }
+
         Destroy(gameObject, lifetime);
     }
 

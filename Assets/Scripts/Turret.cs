@@ -1,15 +1,12 @@
 using UnityEngine;
 
-public class Turret : MonoBehaviour
+public class Turret : Building
 {
     public float range = 30f;
     public float fireRate = 1f;
     public GameObject projectilePrefab;
     public Transform firePoint;
-
     private float fireCooldown = 0f;
-    public bool isConstructed = false;
-
     void Update()
     {
         if (!isConstructed)

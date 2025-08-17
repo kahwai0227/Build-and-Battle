@@ -5,7 +5,9 @@ public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
     public Transform[] spawnPoints;
+    public GameObject townhall;
     public float timeBetweenWaves = 20f;
+    public float spawnDistance = 500f;
     public int enemiesPerWave = 3;
     public int totalWaves = 5; // Set how many waves for a win
 
@@ -26,8 +28,12 @@ public class EnemySpawner : MonoBehaviour
             currentWave++;
             for (int i = 0; i < enemiesPerWave + currentWave; i++)
             {
-                Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-                GameObject enemyObj = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+                // Spawn at random position 500 units from townhall
+                float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+                Vector3 dir = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+                Vector3 spawnPos = townhall.transform.position + dir * spawnDistance;
+
+                GameObject enemyObj = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
                 Enemy enemy = enemyObj.GetComponent<Enemy>();
                 if (enemy != null)
                 {
@@ -37,6 +43,22 @@ public class EnemySpawner : MonoBehaviour
                 yield return new WaitForSeconds(1f);
             }
         }
+    }
+
+    public void SpawnEnemy()
+    {
+        if (townhall == null)
+        {
+            Debug.LogWarning("Townhall not assigned!");
+            return;
+        }
+
+        // Pick a random angle
+        float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+        Vector3 dir = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+        Vector3 spawnPos = townhall.transform.position + dir * spawnDistance;
+
+        GameObject enemyObj = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
     }
 
     // Call this from Enemy when destroyed

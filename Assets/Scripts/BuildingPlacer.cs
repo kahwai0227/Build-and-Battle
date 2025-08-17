@@ -12,14 +12,41 @@ public class BuildingPlacer : MonoBehaviour
 
     private Dictionary<GameObject, bool> constructionCancelled = new Dictionary<GameObject, bool>();
 
+    public bool IsBuildingSelected => buildingPrefab != null;
+
+    public void ToggleBuildingSelection(GameObject prefab)
+    {
+        Debug.Log($"Toggling building selection for: {prefab.name}");
+        Debug.Log($"isBuildingSelected: {IsBuildingSelected}");
+
+        if (buildingPrefab == prefab)
+        {
+            // Deselect
+            buildingPrefab = null;
+        }
+        else
+        {
+            // Select
+            buildingPrefab = prefab;
+            goldCost = prefab.GetComponent<Building>().goldCost;
+            woodCost = prefab.GetComponent<Building>().woodCost;
+            constructionTime = prefab.GetComponent<Building>().constructionTime;
+        }
+    }
+
     void Update()
     {
-        if (UnityEngine.EventSystems.EventSystem.current != null &&
-            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() &&
-            UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
+        if (!IsBuildingSelected)
         {
-            return; // Ignore clicks over UI controls
+            // If no building is selected, ignore input
+            return;
         }
+        if (UnityEngine.EventSystems.EventSystem.current != null &&
+                UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() &&
+                UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
+            {
+                return; // Ignore clicks over UI controls
+            }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -113,8 +140,12 @@ public class BuildingPlacer : MonoBehaviour
     private System.Collections.IEnumerator ConstructBuilding(GameObject building, WorkerDrag worker, Vector3 besidePoint)
     {
         Renderer rend = building.GetComponentInChildren<Renderer>();
+        Color originalColor = Color.white;
         if (rend != null)
+        {
+            originalColor = rend.material.color;
             rend.material.color = Color.yellow;
+        }
 
         GameObject barObj = Instantiate(progressBarPrefab);
         Collider col = building.GetComponent<Collider>();
@@ -149,12 +180,17 @@ public class BuildingPlacer : MonoBehaviour
         }
 
         // After construction is complete:
-        if (rend != null)
-            rend.material.color = Color.white;
+        if (!building.activeInHierarchy)
+            building.SetActive(true);
 
-        Turret turret = building.GetComponent<Turret>();
-        if (turret != null)
-            turret.isConstructed = true;
+        // Set isConstructed for any Building-derived script
+        Building buildingScript = building.GetComponent<Building>();
+        if (buildingScript != null)
+            buildingScript.isConstructed = true;
+
+        // Restore original color
+        if (rend != null)
+            rend.material.color = originalColor;
 
         Destroy(barObj);
 

@@ -40,8 +40,10 @@ public class WorkerDrag : MonoBehaviour
     {
         float checkRadius = 0.75f; // Half the worker's width, adjust as needed
         int steps = 36; // 360 / 10 degrees
+        Vector3 closestPoint = Vector3.zero;
+        float closestDistance = float.MaxValue;
 
-        // Try to find a free position around the target
+        // Try to find the closest free position around the target
         for (int i = 0; i < steps; i++)
         {
             float angle = i * 10 * Mathf.Deg2Rad;
@@ -50,13 +52,25 @@ public class WorkerDrag : MonoBehaviour
 
             Collider[] hits = Physics.OverlapSphere(candidate, checkRadius, LayerMask.GetMask("Worker"));
             if (hits.Length == 0)
-                return candidate; // Return the first free position found
+            {
+                float distance = Vector3.Distance(transform.position, candidate);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestPoint = candidate;
+                }
+            }
         }
 
         // If no free position is found, fall back to a default beside point
-        Vector3 fallbackDirection = (transform.position - targetPosition).normalized;
-        if (fallbackDirection == Vector3.zero) fallbackDirection = Vector3.right;
-        return targetPosition + fallbackDirection * (targetRadius + margin);
+        if (closestPoint == Vector3.zero)
+        {
+            Vector3 fallbackDirection = (transform.position - targetPosition).normalized;
+            if (fallbackDirection == Vector3.zero) fallbackDirection = Vector3.right;
+            closestPoint = targetPosition + fallbackDirection * (targetRadius + margin);
+        }
+
+        return closestPoint;
     }
 
     void Update()
@@ -67,20 +81,37 @@ public class WorkerDrag : MonoBehaviour
                 if (assignedResource)
                 {
                     float resourceRadius = assignedResource.GetComponent<Collider>()?.bounds.extents.magnitude ?? 2f;
-                    Vector3 besidePoint = GetBesidePoint(assignedResource.transform.position, resourceRadius);
-                    if (Vector3.Distance(transform.position, besidePoint) < 1.5f)
+                    Vector3 currentTarget = GetOrFindFreeBesidePoint(assignedResource.transform.position, resourceRadius);
+
+                    // If the worker is not already moving to the closest free point, update the destination
+                    if (Vector3.Distance(agent.destination, currentTarget) > 0.1f)
+                    {
+                        agent.SetDestination(currentTarget);
+                    }
+
+                    // Check if the worker has reached the free point
+                    if (Vector3.Distance(transform.position, currentTarget) < 1.5f)
                     {
                         state = WorkerState.Collecting;
                         StartCoroutine(CollectResource());
                     }
                 }
                 break;
+
             case WorkerState.MovingToTownhall:
                 if (townhall)
                 {
                     float townhallRadius = townhall.GetComponent<Collider>()?.bounds.extents.magnitude ?? 2f;
-                    Vector3 besidePoint = GetBesidePoint(townhall.transform.position, townhallRadius);
-                    if (Vector3.Distance(transform.position, besidePoint) < 1.5f)
+                    Vector3 currentTarget = GetOrFindFreeBesidePoint(townhall.transform.position, townhallRadius);
+
+                    // If the worker is not already moving to the closest free point, update the destination
+                    if (Vector3.Distance(agent.destination, currentTarget) > 0.1f)
+                    {
+                        agent.SetDestination(currentTarget);
+                    }
+
+                    // Check if the worker has reached the free point
+                    if (Vector3.Distance(transform.position, currentTarget) < 1.5f)
                     {
                         state = WorkerState.Delivering;
                         StartCoroutine(DeliverResource());

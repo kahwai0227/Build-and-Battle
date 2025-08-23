@@ -11,10 +11,21 @@ public class CameraController : MonoBehaviour
     private Vector2 lastPanPosition;
     private int panFingerId; // Touch finger ID
 
+    private UnitController unitController;
+    private BuildingPlacer buildingPlacer;
+
+    void Start()
+    {
+        // Find the UnitController and BuildingPlacer in the scene
+        unitController = FindFirstObjectByType<UnitController>();
+        buildingPlacer = FindFirstObjectByType<BuildingPlacer>();
+    }
+
     void Update()
     {
-        BuildingPlacer placer = FindFirstObjectByType<BuildingPlacer>();
-        if (placer != null && placer.IsBuildingSelected)
+        // Disable camera control if gather mode or build mode is active
+        if ((unitController != null && unitController.isGatherMode) ||
+            (buildingPlacer != null && buildingPlacer.IsBuildingSelected))
             return;
 
         // Touch pan for mobile

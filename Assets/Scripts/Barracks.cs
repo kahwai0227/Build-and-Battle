@@ -1,13 +1,14 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Barracks : Building
 {
-    // Barracks-specific properties and logic
     public GameObject unitPrefab;
-    public Transform spawnPoint;
+    public Transform spawnPoint; // Optional spawn point
     public int unitCost = 30;
-    public float trainTime = 5f;
+    public float trainTime = 5f; // Time required to train a unit
     public bool isTraining = false;
+    public float spawnRadius = 5f; // Radius to find an empty spawn area
 
     void Start()
     {
@@ -30,65 +31,65 @@ public class Barracks : Building
         return isTraining;
     }
 
-    public void TrainUnit()
+    public GameObject TrainUnit()
     {
-        Debug.Log("Barracks isConstructed: " + isConstructed);
-        Debug.Log("Barracks isTraining: " + isTraining);
-
-        if (isTraining)
+        if (isTraining || unitPrefab == null)
         {
-            Debug.Log("Cannot train unit: Barracks is already training.");
-            return;
+            Debug.LogWarning("Cannot train unit: Already training or no unit prefab assigned.");
+            return null;
         }
 
-        if (!isConstructed)
-        {
-            Debug.Log("Cannot train unit: Barracks is not constructed.");
-            return;
-        }
-
+        isTraining = true;
         Debug.Log("Training unit...");
-
-        if (ResourceManager.Instance.gold >= unitCost)
-        {
-            ResourceManager.Instance.SpendGold(unitCost);
-            StartCoroutine(TrainUnitCoroutine());
-        }
-        else
-        {
-            Debug.Log("Not enough gold to train unit!");
-        }
+        StartCoroutine(TrainUnitCoroutine());
+        return null; // Temporarily return null since the unit is spawned asynchronously
     }
 
     private System.Collections.IEnumerator TrainUnitCoroutine()
     {
-        isTraining = true;
+        // Wait for the training time to complete
         yield return new WaitForSeconds(trainTime);
 
-        float spawnRadius = 3f; // Distance from barracks
-        float checkRadius = 1f; // Unit size
-        int steps = 12; // 360 / 30 degrees
+        // Find a valid spawn position near the barracks
+        Vector3 spawnPosition = FindFreeBesidePoint(transform.position, spawnRadius);
+        if (spawnPosition == Vector3.zero)
+        {
+            Debug.LogWarning("No valid spawn position found! Spawning at barracks position.");
+            spawnPosition = transform.position; // Fallback to barracks position
+        }
 
-        Vector3 center = spawnPoint != null ? spawnPoint.position : transform.position;
-        Vector3 spawnPos = center + Vector3.right * spawnRadius; // Default position
+        // Spawn the unit
+        GameObject trainedUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);
+
+        isTraining = false;
+        Debug.Log("Unit training complete!");
+
+        // Notify the UnitTrainer about the trained unit
+        var trainer = FindFirstObjectByType<UnitTrainer>();
+        if (trainer != null && trainedUnit != null)
+        {
+            trainer.OnUnitTrained(trainedUnit);
+        }
+    }
+
+    private Vector3 FindFreeBesidePoint(Vector3 targetPosition, float targetRadius, float margin = 1.5f)
+    {
+        float checkRadius = 0.75f; // Half the worker's width, adjust as needed
+        int steps = 36; // 360 / 10 degrees
 
         for (int i = 0; i < steps; i++)
         {
-            float angle = i * (360f / steps) * Mathf.Deg2Rad;
+            float angle = i * 10 * Mathf.Deg2Rad;
             Vector3 dir = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
-            Vector3 candidate = center + dir * spawnRadius;
+            Vector3 candidate = targetPosition + dir * (targetRadius + margin);
 
             Collider[] hits = Physics.OverlapSphere(candidate, checkRadius, LayerMask.GetMask("Unit"));
             if (hits.Length == 0)
-            {
-                spawnPos = candidate;
-                break;
-            }
+                return candidate;
         }
 
-        Instantiate(unitPrefab, spawnPos, Quaternion.identity);
-
-        isTraining = false;
+        // If all are occupied, just use the first direction
+        return targetPosition + Vector3.right * (targetRadius + margin);
     }
 
     protected override void DestroyBuilding()

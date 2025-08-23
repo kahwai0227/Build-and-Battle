@@ -3,54 +3,68 @@ using UnityEngine;
 
 public class BuildingPlacer : MonoBehaviour
 {
-    public GameObject buildingPrefab; // Assign in Inspector
-    public GameObject progressBarPrefab; // Assign in Inspector
-    public float placementMargin = 2.5f; // 0.5f * 5
+    public GameObject buildingPrefab;
+    public GameObject progressBarPrefab;
+    public float placementMargin = 2.5f;
     public int goldCost = 50;
     public int woodCost = 50;
-    public float constructionTime = 10f; // seconds
+    public float constructionTime = 10f;
 
     private Dictionary<GameObject, bool> constructionCancelled = new Dictionary<GameObject, bool>();
+    private UnitController unitController;
 
     public bool IsBuildingSelected => buildingPrefab != null;
 
+    void Start()
+    {
+        // Find the UnitController in the scene
+        unitController = FindFirstObjectByType<UnitController>();
+    }
+
     public void ToggleBuildingSelection(GameObject prefab)
     {
-        Debug.Log($"Toggling building selection for: {prefab.name}");
-        Debug.Log($"isBuildingSelected: {IsBuildingSelected}");
-
         if (buildingPrefab == prefab)
         {
-            // Deselect
             buildingPrefab = null;
         }
         else
         {
-            // Select
             buildingPrefab = prefab;
             goldCost = prefab.GetComponent<Building>().goldCost;
             woodCost = prefab.GetComponent<Building>().woodCost;
             constructionTime = prefab.GetComponent<Building>().constructionTime;
+
+            // Disable gather mode when building selection is toggled
+            if (unitController != null && unitController.isGatherMode)
+            {
+                unitController.isGatherMode = false;
+                Debug.Log("Gather mode disabled.");
+            }
         }
+    }
+
+    public void DeselectBuilding()
+    {
+        buildingPrefab = null;
+        Debug.Log("Construction mode disabled.");
     }
 
     void Update()
     {
         if (!IsBuildingSelected)
         {
-            // If no building is selected, ignore input
             return;
         }
+
         if (UnityEngine.EventSystems.EventSystem.current != null &&
-                UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() &&
-                UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
-            {
-                return; // Ignore clicks over UI controls
-            }
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() &&
+            UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
+        {
+            return;
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
-            // Raycast from mouse to ground
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {

@@ -4,10 +4,10 @@ public class Enemy : MonoBehaviour
 {
     public float speed = 10f;
     public int health = 10;
-    public float attackDamage = 10f;
+    protected float attackDamage = 10f;
     public float attackInterval = 2f; // Time between attacks
-    private float lastAttackTime;
-    private Transform target;
+    protected float lastAttackTime;
+    protected Transform target;
     public EnemySpawner spawner;
 
     public float detectionRadius = 20f; // Radius to detect nearby buildings
@@ -59,7 +59,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void DetectNearbyBuilding()
+    protected void DetectNearbyBuilding()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius, LayerMask.GetMask("Building"));
         float closestDistance = Mathf.Infinity;

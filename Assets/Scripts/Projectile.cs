@@ -7,10 +7,17 @@ public class Projectile : MonoBehaviour
     public float lifetime = 15f;
 
     private Vector3 direction;
+    private Transform target;
 
     public void SetDirection(Vector3 dir)
     {
         direction = dir.normalized;
+    }
+
+    public void SetTarget(Transform target)
+    {
+        this.target = target;
+        Debug.Log($"Projectile target set to: {target.name}");
     }
 
     void Start()
@@ -18,7 +25,6 @@ public class Projectile : MonoBehaviour
         // Rotate the capsule so it faces the direction of travel and lays flat
         if (direction != Vector3.zero)
         {
-            // Look in the direction, then rotate 90 degrees around local X to lay flat
             transform.rotation = Quaternion.LookRotation(direction);
             transform.Rotate(90f, 0f, 0f, Space.Self);
         }
@@ -28,16 +34,43 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
-        transform.position += direction * speed * Time.deltaTime;
+        if (target != null)
+        {
+            // Move toward the target
+            direction = (target.position - transform.position).normalized;
+            transform.position += direction * speed * Time.deltaTime;
+
+            // Rotate to face the target
+            transform.rotation = Quaternion.LookRotation(direction);
+            transform.Rotate(90f, 0f, 0f, Space.Self);
+        }
+        else
+        {
+            // Move in the assigned direction if no target is set
+            transform.position += direction * speed * Time.deltaTime;
+        }
     }
 
     void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"Projectile collided with: {other.name}");
+
+        // Check if the target is an Enemy
         Enemy enemy = other.GetComponent<Enemy>();
-        if (enemy != null)
+        if (enemy != null && other.transform == target)
         {
             enemy.TakeDamage(damage);
             Destroy(gameObject);
+            return;
+        }
+
+        // Check if the target is a Building
+        Building building = other.GetComponent<Building>();
+        if (building != null && other.transform == target)
+        {
+            building.TakeDamage(damage);
+            Destroy(gameObject);
+            return;
         }
     }
 }

@@ -1157,6 +1157,7 @@ MonoBehaviour:
   - {fileID: 8218145223926705717, guid: 7c6790696b669d24489f12b27b662424, type: 3}
   - {fileID: 577802273183732343, guid: 2be0c2a4ab449254d9e100fcdb1486bc, type: 3}
   - {fileID: 6873697880540672916, guid: 7e7145116b51aac47ba54d4cba05de6e, type: 3}
+  - {fileID: 7337753497849333494, guid: 6024ab8de042e464f9ee919bf5c1a867, type: 3}
   spawnPoints:
   - {fileID: 304831224}
   townhall: {fileID: 464411403}
@@ -1570,8 +1571,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64de3d4ff7ff2454aaad60920a443679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  goldCost: 50
+  woodCost: 50
+  constructionTime: 10
+  isConstructed: 0
+  health: 100
   maxHealth: 100
-  currentHealth: 0
 --- !u!114 &464411409
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,6 +7,7 @@ public class Turret : Building
     public GameObject projectilePrefab;
     public Transform firePoint;
     private float fireCooldown = 0f;
+
     void Update()
     {
         if (!isConstructed)
@@ -20,7 +21,7 @@ public class Turret : Building
             Vector3 lookDir = target.transform.position - transform.position;
             lookDir.y = 0; // Keep turret upright
             if (lookDir != Vector3.zero)
-                transform.rotation = Quaternion.LookRotation(lookDir) * Quaternion.Euler(0, 90, 0); // Use -90 or 90 depending on your prefab;
+                transform.rotation = Quaternion.LookRotation(lookDir) * Quaternion.Euler(0, 90, 0); // Adjust rotation based on prefab orientation
 
             if (fireCooldown <= 0f)
             {
@@ -55,11 +56,11 @@ public class Turret : Building
             Projectile projectile = proj.GetComponent<Projectile>();
             if (projectile != null)
             {
-                Vector3 dir = (target.transform.position - firePoint.position).normalized;
-                projectile.SetDirection(dir);
+                projectile.SetTarget(target.transform); // Use the projectile script to target the enemy
             }
         }
     }
+
     protected override void DestroyBuilding()
     {
         Debug.Log("Turret has been destroyed!");

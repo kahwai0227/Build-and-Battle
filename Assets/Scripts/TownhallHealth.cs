@@ -1,19 +1,15 @@
-using UnityEngine;
-
-public class TownhallHealth : MonoBehaviour
+public class TownhallHealth : Building
 {
-    public int maxHealth = 100;
-    public int currentHealth;
-
+    public float maxHealth = 100f;
     void Start()
     {
-        currentHealth = maxHealth;
+        health = maxHealth; // Initialize health from the Building class
     }
 
-    public void TakeDamage(int amount)
+    public override void TakeDamage(float amount)
     {
-        currentHealth -= amount;
-        if (currentHealth <= 0)
+        health -= amount;
+        if (health <= 0)
         {
             GameManager.Instance.GameOver(false);
             gameObject.SetActive(false); // Hide the townhall, not the UI

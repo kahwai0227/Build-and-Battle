@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
             gameOverPanel.alpha = 1;
             gameOverPanel.interactable = true;
             gameOverPanel.blocksRaycasts = true;
-            gameOverText.text = win ? "You Win!" : "Defeat";
+            gameOverText.text = win ? "Victory" : "Defeat";
         }
     }
 }

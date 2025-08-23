@@ -123,8 +123,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  health: 10
+  health: 20
+  attackDamage: 5
+  attackInterval: 2
   spawner: {fileID: 0}
+  detectionRadius: 30
+  attackRange: 10
 --- !u!54 &522113330229986301
 Rigidbody:
   m_ObjectHideFlags: 0

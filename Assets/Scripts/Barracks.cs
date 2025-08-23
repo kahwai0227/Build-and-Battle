@@ -90,4 +90,10 @@ public class Barracks : Building
 
         isTraining = false;
     }
+
+    protected override void DestroyBuilding()
+    {
+        Debug.Log("Barracks has been destroyed!");
+        base.DestroyBuilding();
+    }
 }

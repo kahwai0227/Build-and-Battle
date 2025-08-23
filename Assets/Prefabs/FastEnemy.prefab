@@ -149,6 +149,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09e7e65ae63d3e44ca4a00a0713ce19b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 20
+  speed: 25
   health: 10
+  attackDamage: 2
+  attackInterval: 1
   spawner: {fileID: 0}
+  detectionRadius: 30
+  attackRange: 10

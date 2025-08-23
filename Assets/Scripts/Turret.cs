@@ -60,4 +60,9 @@ public class Turret : Building
             }
         }
     }
+    protected override void DestroyBuilding()
+    {
+        Debug.Log("Turret has been destroyed!");
+        base.DestroyBuilding();
+    }
 }

@@ -124,7 +124,10 @@ MonoBehaviour:
   goldCost: 50
   woodCost: 50
   constructionTime: 10
+  isConstructed: 0
+  health: 10
   unitPrefab: {fileID: 2533387091711538204, guid: 82616ff6efafb11449b5c18fd63fec4c, type: 3}
   spawnPoint: {fileID: 0}
   unitCost: 30
   trainTime: 5
+  isTraining: 0

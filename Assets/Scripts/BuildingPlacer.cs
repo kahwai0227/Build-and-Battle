@@ -157,10 +157,42 @@ public class BuildingPlacer : MonoBehaviour
         constructionCancelled[building] = false;
         worker.SetConstructionProgressBar(barObj);
 
+        // Add a listener to detect building destruction
+        Building buildingScript = building.GetComponent<Building>();
+        if (buildingScript != null)
+        {
+            buildingScript.OnDestroyed += () =>
+            {
+                constructionCancelled[building] = true;
+                if (barObj != null) Destroy(barObj);
+
+                // Free up the worker
+                worker.isBusy = false;
+                worker.state = WorkerDrag.WorkerState.Idle;
+                worker.currentBuilding = null;
+                worker.constructionCoroutine = null;
+                worker.lastGoldCost = 0;
+                worker.lastWoodCost = 0;
+                worker.constructionProgressBar = null;
+            };
+        }
+
         // Wait for worker to arrive at besidePoint
         while (Vector3.Distance(worker.transform.position, besidePoint) > 3f)
         {
-            if (constructionCancelled[building]) yield break;
+            if (constructionCancelled[building])
+            {
+                // Free up the worker if construction is canceled
+                worker.isBusy = false;
+                worker.state = WorkerDrag.WorkerState.Idle;
+                worker.currentBuilding = null;
+                worker.constructionCoroutine = null;
+                worker.lastGoldCost = 0;
+                worker.lastWoodCost = 0;
+                worker.constructionProgressBar = null;
+
+                yield break;
+            }
             yield return null;
         }
 
@@ -169,8 +201,18 @@ public class BuildingPlacer : MonoBehaviour
         {
             if (constructionCancelled[building])
             {
-                // Clean up if cancelled
+                // Clean up if canceled
                 if (barObj != null) Destroy(barObj);
+
+                // Free up the worker
+                worker.isBusy = false;
+                worker.state = WorkerDrag.WorkerState.Idle;
+                worker.currentBuilding = null;
+                worker.constructionCoroutine = null;
+                worker.lastGoldCost = 0;
+                worker.lastWoodCost = 0;
+                worker.constructionProgressBar = null;
+
                 yield break;
             }
             elapsed += Time.deltaTime;
@@ -184,7 +226,6 @@ public class BuildingPlacer : MonoBehaviour
             building.SetActive(true);
 
         // Set isConstructed for any Building-derived script
-        Building buildingScript = building.GetComponent<Building>();
         if (buildingScript != null)
             buildingScript.isConstructed = true;
 

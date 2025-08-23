@@ -42,7 +42,6 @@ public class EnemySpawner : MonoBehaviour
                     enemy.spawner = this; // Add a reference to the spawner
                 }
                 spawnedEnemies++;
-                yield return new WaitForSeconds(1f);
             }
         }
     }

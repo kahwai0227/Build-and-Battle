@@ -150,10 +150,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  health: 10
+  health: 15
+  attackDamage: 2
   attackInterval: 2
   spawner: {fileID: 0}
-  detectionRadius: 20
-  attackRange: 125.79
+  detectionRadius: 60
+  attackRange: 25
   projectilePrefab: {fileID: 3505089107427514379, guid: 506e5db70b4bceb4b827d2e430bce7d0, type: 3}
   projectileSpeed: 15

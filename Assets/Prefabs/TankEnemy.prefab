@@ -150,9 +150,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  health: 30
+  health: 100
   attackDamage: 2
-  attackInterval: 3
+  attackInterval: 10
   spawner: {fileID: 0}
   detectionRadius: 30
   attackRange: 10

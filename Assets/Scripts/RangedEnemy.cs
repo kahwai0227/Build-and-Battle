@@ -5,13 +5,6 @@ public class RangedEnemy : Enemy
     public GameObject projectilePrefab; // Prefab for the projectile
     public float projectileSpeed = 100f;
 
-    public override void Start()
-    {
-        base.Start();
-        // Ranged enemies have a larger attack range
-        attackRange = 10f;
-    }
-
     void Update()
     {
         // Check for nearby buildings

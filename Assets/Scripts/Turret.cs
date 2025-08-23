@@ -4,6 +4,7 @@ public class Turret : Building
 {
     public float range = 30f;
     public float fireRate = 1f;
+    public float damage = 10f; // Variable to modify turret damage
     public GameObject projectilePrefab;
     public Transform firePoint;
     private float fireCooldown = 0f;
@@ -56,6 +57,7 @@ public class Turret : Building
             Projectile projectile = proj.GetComponent<Projectile>();
             if (projectile != null)
             {
+                projectile.damage = (int)damage; // Set the projectile's damage based on the turret's damage
                 projectile.SetTarget(target.transform); // Use the projectile script to target the enemy
             }
         }

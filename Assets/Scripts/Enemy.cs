@@ -4,7 +4,7 @@ public class Enemy : MonoBehaviour
 {
     public float speed = 10f;
     public int health = 10;
-    protected float attackDamage = 10f;
+    public float attackDamage = 10f;
     public float attackInterval = 2f; // Time between attacks
     protected float lastAttackTime;
     protected Transform target;

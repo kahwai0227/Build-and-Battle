@@ -5,7 +5,7 @@ public class UnitController : MonoBehaviour
 {
     public List<Unit> units = new List<Unit>();
     public LayerMask groundLayer;
-    public float attackRadius = 10f;
+    public float attackRadius = 20f;
 
     public bool isGatherMode = false;
 

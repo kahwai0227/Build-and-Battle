@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     protected Transform target;
     public EnemySpawner spawner;
 
-    public float detectionRadius = 20f; // Radius to detect nearby buildings
+    public float detectionRadius = 20f; // Radius to detect nearby buildings or units
     public float attackRange = 3f; // Distance to stop and attack
 
     private bool isAttacking = false;
@@ -24,8 +24,8 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        // Check for nearby buildings
-        DetectNearbyBuilding();
+        // Check for nearby units or buildings
+        DetectNearbyTarget();
 
         if (target != null && !isAttacking)
         {
@@ -49,45 +49,65 @@ public class Enemy : MonoBehaviour
             float distance = Vector3.Distance(transform.position, target.position);
             if (distance <= attackRange && Time.time > lastAttackTime + attackInterval)
             {
-                Building building = target.GetComponent<Building>();
-                if (building != null)
+                Unit unit = target.GetComponent<Unit>();
+                if (unit != null)
                 {
-                    building.TakeDamage(attackDamage);
+                    unit.TakeDamage((int)attackDamage);
                     lastAttackTime = Time.time;
+                }
+                else
+                {
+                    Building building = target.GetComponent<Building>();
+                    if (building != null)
+                    {
+                        building.TakeDamage(attackDamage);
+                        lastAttackTime = Time.time;
+                    }
                 }
             }
         }
     }
 
-    protected void DetectNearbyBuilding()
+    protected void DetectNearbyTarget()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius, LayerMask.GetMask("Building"));
+        Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius, LayerMask.GetMask("Unit", "Building"));
         float closestDistance = Mathf.Infinity;
-        Transform closestBuilding = null;
+        Transform closestTarget = null;
 
         foreach (Collider collider in colliders)
         {
+            Unit unit = collider.GetComponent<Unit>();
             Building building = collider.GetComponent<Building>();
-            if (building != null && building.health > 0)
+
+            if (unit != null && unit.health > 0)
+            {
+                float distance = Vector3.Distance(transform.position, unit.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestTarget = unit.transform;
+                }
+            }
+            else if (building != null && building.health > 0)
             {
                 float distance = Vector3.Distance(transform.position, building.transform.position);
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
-                    closestBuilding = building.transform;
+                    closestTarget = building.transform;
                 }
             }
         }
 
-        // If a nearby building is found, target the closest one
-        if (closestBuilding != null)
+        // If a nearby target is found, target the closest one
+        if (closestTarget != null)
         {
-            target = closestBuilding;
+            target = closestTarget;
             isAttacking = false; // Reset attacking state
         }
         else
         {
-            // If no nearby building is found, target the townhall
+            // If no nearby target is found, target the townhall
             GameObject townhall = GameObject.FindWithTag("Townhall");
             if (townhall != null)
             {

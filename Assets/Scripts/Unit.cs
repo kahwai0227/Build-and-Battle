@@ -9,6 +9,8 @@ public class Unit : MonoBehaviour
     private NavMeshAgent agent;
     public bool isIdle = true;
 
+    public int health = 50; // Unit health
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -41,6 +43,18 @@ public class Unit : MonoBehaviour
         if (agent != null && Vector3.Distance(transform.position, enemy.transform.position) > agent.stoppingDistance)
         {
             agent.SetDestination(enemy.transform.position);
+        }
+    }
+
+    public void TakeDamage(int amount)
+    {
+        health -= amount;
+        Debug.Log($"{gameObject.name} took {amount} damage. Remaining health: {health}");
+
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+            Debug.Log($"{gameObject.name} has been destroyed!");
         }
     }
 

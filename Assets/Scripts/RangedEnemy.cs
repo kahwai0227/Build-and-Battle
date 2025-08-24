@@ -7,8 +7,8 @@ public class RangedEnemy : Enemy
 
     void Update()
     {
-        // Check for nearby buildings
-        DetectNearbyBuilding();
+        // Check for nearby targets (units or buildings)
+        DetectNearbyTarget();
 
         if (target != null)
         {
@@ -41,7 +41,7 @@ public class RangedEnemy : Enemy
             Projectile projectileScript = projectile.GetComponent<Projectile>();
             if (projectileScript != null)
             {
-                projectileScript.SetTarget(target.transform); // Use the projectile script to target the building
+                projectileScript.SetTarget(target.transform); // Use the projectile script to target the building or unit
             }
         }
     }

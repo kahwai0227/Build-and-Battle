@@ -1163,7 +1163,7 @@ MonoBehaviour:
   spawnPoints:
   - {fileID: 304831224}
   townhall: {fileID: 464411403}
-  timeBetweenWaves: 100000
+  timeBetweenWaves: 30
   spawnDistance: 500
   enemiesPerWave: 5
   totalWaves: 20
@@ -3088,7 +3088,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Barracks
+  m_text: Gather Units
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

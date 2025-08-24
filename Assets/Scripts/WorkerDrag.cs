@@ -29,14 +29,7 @@ public class WorkerDrag : MonoBehaviour
         townhall = GameObject.FindWithTag("Townhall");
     }
 
-    private Vector3 GetBesidePoint(Vector3 targetPosition, float targetRadius, float margin = 1.5f)
-    {
-        Vector3 direction = (transform.position - targetPosition).normalized;
-        if (direction == Vector3.zero) direction = Vector3.right;
-        return targetPosition + direction * (targetRadius + margin);
-    }
-
-    private Vector3 GetOrFindFreeBesidePoint(Vector3 targetPosition, float targetRadius, float margin = 1.5f)
+    private Vector3 GetOrFindFreeBesidePoint(Vector3 targetPosition, float targetRadius, float margin = 0.5f)
     {
         float checkRadius = 0.75f; // Half the worker's width, adjust as needed
         int steps = 36; // 360 / 10 degrees
@@ -90,7 +83,7 @@ public class WorkerDrag : MonoBehaviour
                     }
 
                     // Check if the worker has reached the free point
-                    if (Vector3.Distance(transform.position, currentTarget) < 1.5f)
+                    if (Vector3.Distance(transform.position, currentTarget) < 2.0f)
                     {
                         state = WorkerState.Collecting;
                         StartCoroutine(CollectResource());
@@ -111,7 +104,7 @@ public class WorkerDrag : MonoBehaviour
                     }
 
                     // Check if the worker has reached the free point
-                    if (Vector3.Distance(transform.position, currentTarget) < 1.5f)
+                    if (Vector3.Distance(transform.position, currentTarget) < 2.0f)
                     {
                         state = WorkerState.Delivering;
                         StartCoroutine(DeliverResource());
@@ -124,7 +117,7 @@ public class WorkerDrag : MonoBehaviour
     public void AssignResource(ResourceNode resource)
     {
         assignedResource = resource;
-        float resourceRadius = resource.GetComponent<Collider>()?.bounds.extents.magnitude ?? 2f;
+        float resourceRadius = resource.GetComponent<Collider>()?.bounds.extents.magnitude ?? 1.5f;
         Vector3 besidePoint = GetOrFindFreeBesidePoint(resource.transform.position, resourceRadius);
         agent.SetDestination(besidePoint);
         state = WorkerState.MovingToResource;
@@ -180,7 +173,7 @@ public class WorkerDrag : MonoBehaviour
         isCarrying = false;
         if (assignedResource && !assignedResource.IsDepleted())
         {
-            float resourceRadius = assignedResource.GetComponent<Collider>()?.bounds.extents.magnitude ?? 2f;
+            float resourceRadius = assignedResource.GetComponent<Collider>()?.bounds.extents.magnitude ?? 1.5f;
             Vector3 besidePoint = GetOrFindFreeBesidePoint(assignedResource.transform.position, resourceRadius);
             agent.SetDestination(besidePoint);
             state = WorkerState.MovingToResource;

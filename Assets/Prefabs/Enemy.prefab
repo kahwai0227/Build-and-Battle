@@ -125,7 +125,7 @@ MonoBehaviour:
   speed: 10
   health: 40
   attackDamage: 5
-  attackInterval: 5
+  attackInterval: 2
   spawner: {fileID: 0}
   detectionRadius: 30
   attackRange: 10

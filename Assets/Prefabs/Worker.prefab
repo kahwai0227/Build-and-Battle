@@ -150,9 +150,9 @@ MonoBehaviour:
   assignedResource: {fileID: 0}
   townhall: {fileID: 0}
   collectTime: 2
-  carryAmount: 10
+  carryAmount: 20
   isBusy: 0
-  moveSpeed: 10
+  moveSpeed: 15
   currentBuilding: {fileID: 0}
   lastGoldCost: 0
   lastWoodCost: 0

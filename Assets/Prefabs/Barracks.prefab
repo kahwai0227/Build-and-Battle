@@ -123,12 +123,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goldCost: 30
   woodCost: 50
-  constructionTime: 10
+  constructionTime: 15
   isConstructed: 0
-  health: 10
+  health: 300
   constructionProgressBar: {fileID: 0}
   meleeUnitPrefab: {fileID: 2533387091711538204, guid: 82616ff6efafb11449b5c18fd63fec4c, type: 3}
   rangedUnitPrefab: {fileID: 4948178143511587348, guid: 0c955afc28e7e814c9133f97b6cd9714, type: 3}
   tankUnitPrefab: {fileID: 6422839435191567510, guid: 4c0eec95460adef4abb7ea74318a4c07, type: 3}
   spawnPoint: {fileID: 0}
   trainTime: 5
+  spawnRadius: 2

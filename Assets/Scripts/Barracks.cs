@@ -6,6 +6,10 @@ public class Barracks : Building
     public GameObject rangedUnitPrefab;
     public GameObject tankUnitPrefab;
 
+    public int meleeUnitCost = 30;
+    public int rangedUnitCost = 40;
+    public int tankUnitCost = 60;
+
     public Transform spawnPoint;
     public float trainTime = 5f;
     public float spawnRadius = 2f; // Radius used to find spawn position
@@ -36,26 +40,35 @@ public class Barracks : Building
     public GameObject TrainUnit(string unitType)
     {
         GameObject unitPrefab = null;
+        int unitCost = 0;
 
         switch (unitType)
         {
             case "Melee":
                 unitPrefab = meleeUnitPrefab;
+                unitCost = meleeUnitCost;
                 break;
             case "Ranged":
                 unitPrefab = rangedUnitPrefab;
+                unitCost = rangedUnitCost;
                 break;
             case "Tank":
                 unitPrefab = tankUnitPrefab;
+                unitCost = tankUnitCost;
                 break;
         }
 
-        if (unitPrefab != null)
+        // Check if the player has enough resources
+        if (unitPrefab != null && ResourceManager.Instance.GetGold() >= unitCost)
         {
+            // Deduct the cost and start training
+            ResourceManager.Instance.SpendGold(unitCost);
             StartCoroutine(TrainUnitCoroutine(unitPrefab));
+            return unitPrefab;
         }
 
-        return null; // Return null immediately since the unit is spawned asynchronously
+        Debug.Log("Not enough resources to train unit!");
+        return null; // Return null if training cannot start
     }
 
     private System.Collections.IEnumerator TrainUnitCoroutine(GameObject unitPrefab)

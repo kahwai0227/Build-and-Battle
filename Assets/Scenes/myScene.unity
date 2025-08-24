@@ -1220,8 +1220,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5e65174bdc75fc4c8ba009a742b2a60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gold: 347
-  wood: 338
+  gold: 350
+  wood: 200
 --- !u!4 &304831224
 Transform:
   m_ObjectHideFlags: 0
@@ -1321,7 +1321,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  attackRadius: 10
+  attackRadius: 50
   isGatherMode: 0
 --- !u!1 &306719091
 GameObject:
@@ -1733,9 +1733,9 @@ MonoBehaviour:
   woodCost: 50
   constructionTime: 10
   isConstructed: 0
-  health: 100
+  health: 500
   constructionProgressBar: {fileID: 0}
-  maxHealth: 100
+  maxHealth: 500
 --- !u!114 &464411409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3859,7 +3859,7 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0, b: 0, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   buildingPrefab: {fileID: 5668503346427069026, guid: 96844956e6c1b414d8c7d8ccfe5a0c7d, type: 3}
---- !u!1001 &1957796211
+--- !u!1001 &2056844394
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -3873,15 +3873,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4366423665612831211, guid: dfa64068b7100cf4698d6ff6d62e2e53, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -18.7
+      value: -20.29
       objectReference: {fileID: 0}
     - target: {fileID: 4366423665612831211, guid: dfa64068b7100cf4698d6ff6d62e2e53, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.0000038
+      value: 2.4612918
       objectReference: {fileID: 0}
     - target: {fileID: 4366423665612831211, guid: dfa64068b7100cf4698d6ff6d62e2e53, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.3301392
+      value: -2.87
       objectReference: {fileID: 0}
     - target: {fileID: 4366423665612831211, guid: dfa64068b7100cf4698d6ff6d62e2e53, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4020,4 +4020,4 @@ SceneRoots:
   - {fileID: 208935356}
   - {fileID: 1457188631}
   - {fileID: 306719095}
-  - {fileID: 1957796211}
+  - {fileID: 2056844394}

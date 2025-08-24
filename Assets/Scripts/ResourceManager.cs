@@ -17,6 +17,10 @@ public class ResourceManager : MonoBehaviour
 
     public void AddGold(int amount) => gold += amount;
     public void AddWood(int amount) => wood += amount;
+    public int GetGold()
+    {
+        return gold;
+    }
 
     public bool SpendGold(int amount)
     {

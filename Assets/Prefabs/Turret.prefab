@@ -236,9 +236,10 @@ MonoBehaviour:
   woodCost: 50
   constructionTime: 10
   isConstructed: 0
-  health: 20
+  health: 200
+  constructionProgressBar: {fileID: 0}
   range: 30
   fireRate: 1
-  damage: 5
+  damage: 20
   projectilePrefab: {fileID: 3505089107427514379, guid: 506e5db70b4bceb4b827d2e430bce7d0, type: 3}
   firePoint: {fileID: 6367937987889856377}

@@ -5,7 +5,7 @@ public class UnitController : MonoBehaviour
 {
     public List<Unit> units = new List<Unit>();
     public LayerMask groundLayer;
-    public float attackRadius = 20f;
+    public float attackRadius = 50f;
 
     public bool isGatherMode = false;
 
@@ -76,30 +76,30 @@ public class UnitController : MonoBehaviour
             pivotUnit.MoveTo(gatherPoint); // Move the pivot unit to the exact gather point
         }
 
-        // Calculate positions for the remaining units around the pivot unit
-        float spacing = 2f; // Distance between units
-        int unitsPerCircle = 6; // Number of units per circle layer
-        int currentCircle = 1; // Start with the first circle layer
-        int currentUnitIndex = 1; // Start with the second unit (index 1)
+        // Define grid parameters
+        float spacing = 5f; // Distance between units
+        int unitsPerRow = Mathf.CeilToInt(Mathf.Sqrt(units.Count)); // Calculate the number of units per row
+        int currentRow = 0;
+        int currentColumn = 0;
 
+        // Calculate positions for the remaining units in a rectangular grid
         for (int i = 1; i < units.Count; i++)
         {
             Unit unit = units[i];
             if (unit != null)
             {
-                // Calculate the angle and position for the unit
-                float angle = (currentUnitIndex - 1) * (360f / unitsPerCircle) * Mathf.Deg2Rad;
-                Vector3 offset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * (spacing * currentCircle);
+                // Calculate the position in the grid
+                Vector3 offset = new Vector3(currentColumn * spacing, 0, -currentRow * spacing);
                 Vector3 targetPosition = gatherPoint + offset;
 
                 unit.MoveTo(targetPosition);
 
-                // Update the unit index and circle layer
-                currentUnitIndex++;
-                if (currentUnitIndex > unitsPerCircle)
+                // Update column and row indices
+                currentColumn++;
+                if (currentColumn >= unitsPerRow)
                 {
-                    currentUnitIndex = 1;
-                    currentCircle++;
+                    currentColumn = 0;
+                    currentRow++;
                 }
             }
         }

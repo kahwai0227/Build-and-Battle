@@ -5,8 +5,8 @@ public class Unit : MonoBehaviour
 {
     public float attackDamage = 10f;
     public float attackInterval = 1f;
-    private float lastAttackTime;
-    private NavMeshAgent agent;
+    protected float lastAttackTime;
+    protected NavMeshAgent agent;
     public bool isIdle = true;
 
     public int health = 50; // Unit health
@@ -30,7 +30,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void Attack(Enemy enemy)
+    public virtual void Attack(Enemy enemy)
     {
         if (enemy != null && Time.time > lastAttackTime + attackInterval)
         {

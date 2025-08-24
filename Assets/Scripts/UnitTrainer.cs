@@ -23,23 +23,13 @@ public class UnitTrainer : MonoBehaviour
         barracksList.Remove(barracks);
     }
 
-    public void TrainUnit()
+    public void TrainUnit(string unitType)
     {
         foreach (var barracks in barracksList)
         {
             if (barracks.isConstructed && !barracks.isTraining)
             {
-                GameObject trainedUnit = barracks.TrainUnit();
-                if (trainedUnit != null && unitController != null)
-                {
-                    // Add the trained unit to the UnitController's unit list
-                    Unit unit = trainedUnit.GetComponent<Unit>();
-                    if (unit != null)
-                    {
-                        unitController.units.Add(unit);
-                        Debug.Log($"Unit added to UnitController: {unit.name}");
-                    }
-                }
+                barracks.TrainUnit(unitType); // Train the unit
                 return;
             }
         }

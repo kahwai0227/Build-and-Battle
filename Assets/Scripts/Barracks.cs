@@ -2,51 +2,65 @@ using UnityEngine;
 
 public class Barracks : Building
 {
-    public GameObject unitPrefab;
-    public Transform spawnPoint; // Optional spawn point
-    public int unitCost = 30;
-    public float trainTime = 5f; // Time required to train a unit
-    public bool isTraining = false;
-    public float spawnRadius = 5f; // Radius to find an empty spawn area
+    public GameObject meleeUnitPrefab;
+    public GameObject rangedUnitPrefab;
+    public GameObject tankUnitPrefab;
+
+    public Transform spawnPoint;
+    public float trainTime = 5f;
+    public float spawnRadius = 2f; // Radius used to find spawn position
+
+    public bool isTraining { get; private set; } // Tracks if the barracks is training a unit
+
+    private UnitTrainer unitTrainer;
 
     void Start()
     {
-        // Register this barracks with the UnitTrainer on the GameManager object
-        var trainer = FindFirstObjectByType<UnitTrainer>();
-        if (trainer != null)
-            trainer.RegisterBarracks(this);
+        // Find the UnitTrainer in the scene and register this barracks
+        unitTrainer = FindFirstObjectByType<UnitTrainer>();
+        if (unitTrainer != null)
+        {
+            unitTrainer.RegisterBarracks(this);
+        }
     }
 
     void OnDestroy()
     {
         // Unregister this barracks from the UnitTrainer
-        var trainer = FindFirstObjectByType<UnitTrainer>();
-        if (trainer != null)
-            trainer.UnregisterBarracks(this);
-    }
-
-    public bool IsTraining()
-    {
-        return isTraining;
-    }
-
-    public GameObject TrainUnit()
-    {
-        if (isTraining || unitPrefab == null)
+        if (unitTrainer != null)
         {
-            Debug.LogWarning("Cannot train unit: Already training or no unit prefab assigned.");
-            return null;
+            unitTrainer.UnregisterBarracks(this);
+        }
+    }
+
+    public GameObject TrainUnit(string unitType)
+    {
+        GameObject unitPrefab = null;
+
+        switch (unitType)
+        {
+            case "Melee":
+                unitPrefab = meleeUnitPrefab;
+                break;
+            case "Ranged":
+                unitPrefab = rangedUnitPrefab;
+                break;
+            case "Tank":
+                unitPrefab = tankUnitPrefab;
+                break;
         }
 
-        isTraining = true;
-        Debug.Log("Training unit...");
-        StartCoroutine(TrainUnitCoroutine());
-        return null; // Temporarily return null since the unit is spawned asynchronously
+        if (unitPrefab != null)
+        {
+            StartCoroutine(TrainUnitCoroutine(unitPrefab));
+        }
+
+        return null; // Return null immediately since the unit is spawned asynchronously
     }
 
-    private System.Collections.IEnumerator TrainUnitCoroutine()
+    private System.Collections.IEnumerator TrainUnitCoroutine(GameObject unitPrefab)
     {
-        // Wait for the training time to complete
+        isTraining = true; // Set isTraining to true
         yield return new WaitForSeconds(trainTime);
 
         // Find a valid spawn position near the barracks
@@ -64,10 +78,9 @@ public class Barracks : Building
         Debug.Log("Unit training complete!");
 
         // Notify the UnitTrainer about the trained unit
-        var trainer = FindFirstObjectByType<UnitTrainer>();
-        if (trainer != null && trainedUnit != null)
+        if (unitTrainer != null && trainedUnit != null)
         {
-            trainer.OnUnitTrained(trainedUnit);
+            unitTrainer.OnUnitTrained(trainedUnit);
         }
     }
 

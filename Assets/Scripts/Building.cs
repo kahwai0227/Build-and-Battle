@@ -12,6 +12,9 @@ public class Building : MonoBehaviour
 
     public float health = 100f; // Default health for buildings
 
+    // Reference to the construction progress bar
+    public GameObject constructionProgressBar;
+
     public virtual void TakeDamage(float amount)
     {
         health -= amount;
@@ -26,8 +29,21 @@ public class Building : MonoBehaviour
     protected virtual void DestroyBuilding()
     {
         Debug.Log($"{gameObject.name} has been destroyed!");
+
+        // Destroy the construction progress bar if it exists
+        if (constructionProgressBar != null)
+        {
+            Destroy(constructionProgressBar);
+            Debug.Log("Construction progress bar destroyed.");
+        }
+
+        // Additional cleanup logic (if needed)
+        OnDestroyed?.Invoke();
+
+        // Destroy the building itself
         Destroy(gameObject);
     }
+
     private void OnDestroy()
     {
         if (OnDestroyed != null)

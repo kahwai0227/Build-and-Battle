@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5369ec218f8a9c4282572bb67fe1ac5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldCost: 50
+  goldCost: 30
   woodCost: 50
   constructionTime: 10
   isConstructed: 0

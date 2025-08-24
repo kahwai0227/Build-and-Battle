@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bace926ec645e449a3c1f0904c79a38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldCost: 50
+  goldCost: 30
   woodCost: 50
   constructionTime: 10
   isConstructed: 0
@@ -131,3 +131,4 @@ MonoBehaviour:
   unitCost: 30
   trainTime: 5
   isTraining: 0
+  spawnRadius: 5

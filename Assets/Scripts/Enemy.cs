@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
@@ -14,9 +15,18 @@ public class Enemy : MonoBehaviour
     public float attackRange = 3f; // Distance to stop and attack
 
     private bool isAttacking = false;
+    private NavMeshAgent agent;
 
     public virtual void Start()
     {
+        // Initialize NavMeshAgent
+        agent = GetComponent<NavMeshAgent>();
+        if (agent != null)
+        {
+            agent.speed = speed;
+        }
+
+        // Set the initial target to the townhall
         GameObject townhall = GameObject.FindWithTag("Townhall");
         if (townhall != null)
             target = townhall.transform;
@@ -27,18 +37,26 @@ public class Enemy : MonoBehaviour
         // Check for nearby units or buildings
         DetectNearbyTarget();
 
-        if (target != null && !isAttacking)
+        if (target != null)
         {
-            Vector3 dir = (target.position - transform.position).normalized;
             float distance = Vector3.Distance(transform.position, target.position);
 
-            // Stop moving if within attack range
+            // Move towards the target if not within attack range
             if (distance > attackRange)
             {
-                transform.position += dir * speed * Time.deltaTime;
+                if (agent != null)
+                {
+                    agent.SetDestination(target.position);
+                }
+                isAttacking = false;
             }
             else
             {
+                // Stop moving and attack the target
+                if (agent != null)
+                {
+                    agent.ResetPath();
+                }
                 isAttacking = true;
             }
         }

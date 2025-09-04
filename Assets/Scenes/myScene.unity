@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 40806758}
   - component: {fileID: 40806760}
   - component: {fileID: 40806759}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -266,7 +266,7 @@ GameObject:
   - component: {fileID: 94281801}
   - component: {fileID: 94281803}
   - component: {fileID: 94281802}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -402,7 +402,7 @@ GameObject:
   - component: {fileID: 128031882}
   - component: {fileID: 128031881}
   - component: {fileID: 128031880}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DefeatPanelText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -541,7 +541,7 @@ GameObject:
   - component: {fileID: 145324452}
   - component: {fileID: 145324455}
   - component: {fileID: 145324456}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -563,10 +563,10 @@ RectTransform:
   - {fileID: 1575291706}
   - {fileID: 1618970153}
   - {fileID: 2081861712}
-  - {fileID: 225076199}
   - {fileID: 528801701}
   - {fileID: 1562431126}
   - {fileID: 1419348476}
+  - {fileID: 225076199}
   - {fileID: 1951375663}
   - {fileID: 1241060511}
   - {fileID: 791773877}
@@ -593,7 +593,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
 --- !u!114 &145324453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -678,7 +678,7 @@ GameObject:
   - component: {fileID: 146599149}
   - component: {fileID: 146599151}
   - component: {fileID: 146599150}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -939,7 +939,7 @@ GameObject:
   - component: {fileID: 225076202}
   - component: {fileID: 225076201}
   - component: {fileID: 225076200}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: TrainWorker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -955,15 +955,15 @@ RectTransform:
   m_GameObject: {fileID: 225076198}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 94281801}
   m_Father: {fileID: 145324451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -356, y: -216}
+  m_AnchoredPosition: {x: -958, y: -440}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &225076200
@@ -1075,6 +1075,7 @@ GameObject:
   - component: {fileID: 304831227}
   - component: {fileID: 304831228}
   - component: {fileID: 304831229}
+  - component: {fileID: 304831230}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1196,7 +1197,53 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   attackRadius: 50
-  isGatherMode: 0
+  isGatherMode: 1
+--- !u!114 &304831230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 304831222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e46e849a63e316a47b6d0b7366dafe1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  touchAction:
+    m_Name: Touch
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: d67f37fe-9a14-469a-a167-753121134656
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 6be37468-9075-41a9-b147-a2e7cb38207a
+      m_Path: <Touchscreen>/Press
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Touch
+      m_Flags: 0
+    m_Flags: 0
+  zoomAction:
+    m_Name: Zoom
+    m_Type: 2
+    m_ExpectedControlType: Delta
+    m_Id: 433e48c8-dce0-4f9a-b143-538685f1594c
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: e968b327-a3c6-428a-a01a-84479b795c04
+      m_Path: <Touchscreen>/delta
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Zoom
+      m_Flags: 0
+    m_Flags: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1348,13 +1395,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panSpeed: 50
+  zoomSpeed: 100
+  minY: 10
+  maxY: 300
   minX: -1000
   maxX: 1000
   minZ: -1000
   maxZ: 1000
-  zoomSpeed: 100
-  minY: 10
-  maxY: 300
 --- !u!1 &464411403
 GameObject:
   m_ObjectHideFlags: 0
@@ -1513,7 +1560,7 @@ GameObject:
   - component: {fileID: 517498118}
   - component: {fileID: 517498120}
   - component: {fileID: 517498119}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1650,7 +1697,7 @@ GameObject:
   - component: {fileID: 528801704}
   - component: {fileID: 528801703}
   - component: {fileID: 528801702}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Melee
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1666,15 +1713,15 @@ RectTransform:
   m_GameObject: {fileID: 528801700}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 517498118}
   m_Father: {fileID: 145324451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -182.09998, y: -136}
+  m_AnchoredPosition: {x: -691, y: -320}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &528801702
@@ -1783,7 +1830,7 @@ GameObject:
   - component: {fileID: 791773882}
   - component: {fileID: 791773881}
   - component: {fileID: 791773880}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: GatherUnits
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1799,15 +1846,15 @@ RectTransform:
   m_GameObject: {fileID: 791773876}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1808477888}
   m_Father: {fileID: 145324451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 358, y: -204}
+  m_AnchoredPosition: {x: 923, y: -440}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &791773880
@@ -2041,7 +2088,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1000, y: 1000, z: 1000}
+  m_LocalScale: {x: 500, y: 500, z: 500}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -2059,7 +2106,7 @@ GameObject:
   - component: {fileID: 1241060513}
   - component: {fileID: 1241060512}
   - component: {fileID: 1241060515}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: BuildBarracks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2075,15 +2122,15 @@ RectTransform:
   m_GameObject: {fileID: 1241060510}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1711382422}
   m_Father: {fileID: 145324451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -356, y: -136}
+  m_AnchoredPosition: {x: -958, y: -320}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1241060512
@@ -2288,7 +2335,7 @@ GameObject:
   - component: {fileID: 1419348479}
   - component: {fileID: 1419348478}
   - component: {fileID: 1419348477}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Tank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2304,15 +2351,15 @@ RectTransform:
   m_GameObject: {fileID: 1419348475}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 40806758}
   m_Father: {fileID: 145324451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -182.09998, y: -216}
+  m_AnchoredPosition: {x: -691, y: -440}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1419348477
@@ -2421,7 +2468,7 @@ GameObject:
   - component: {fileID: 1562431129}
   - component: {fileID: 1562431128}
   - component: {fileID: 1562431127}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Ranged
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2437,15 +2484,15 @@ RectTransform:
   m_GameObject: {fileID: 1562431125}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1784866691}
   m_Father: {fileID: 145324451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -182.09998, y: -175}
+  m_AnchoredPosition: {x: -691, y: -380}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1562431127
@@ -2553,7 +2600,7 @@ GameObject:
   - component: {fileID: 1575291706}
   - component: {fileID: 1575291708}
   - component: {fileID: 1575291707}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ResourceText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2576,7 +2623,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 110, y: -33}
+  m_AnchoredPosition: {x: 250, y: -80}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1575291707
@@ -2626,8 +2673,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2689,7 +2736,7 @@ GameObject:
   - component: {fileID: 1618970153}
   - component: {fileID: 1618970152}
   - component: {fileID: 1618970151}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: TownhallHealthText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2743,8 +2790,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2811,7 +2858,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -116, y: -33}
+  m_AnchoredPosition: {x: -224, y: -80}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1636129979
@@ -2949,7 +2996,7 @@ GameObject:
   - component: {fileID: 1711382422}
   - component: {fileID: 1711382424}
   - component: {fileID: 1711382423}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3085,7 +3132,7 @@ GameObject:
   - component: {fileID: 1784866691}
   - component: {fileID: 1784866693}
   - component: {fileID: 1784866692}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3221,7 +3268,7 @@ GameObject:
   - component: {fileID: 1808477888}
   - component: {fileID: 1808477890}
   - component: {fileID: 1808477889}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3359,7 +3406,7 @@ GameObject:
   - component: {fileID: 1951375665}
   - component: {fileID: 1951375664}
   - component: {fileID: 1951375667}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: BuildTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3375,15 +3422,15 @@ RectTransform:
   m_GameObject: {fileID: 1951375662}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 146599149}
   m_Father: {fileID: 145324451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -356, y: -175}
+  m_AnchoredPosition: {x: -958, y: -380}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1951375664
@@ -3566,7 +3613,7 @@ GameObject:
   - component: {fileID: 2081861714}
   - component: {fileID: 2081861713}
   - component: {fileID: 2081861715}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DefeatPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 public class UnitController : MonoBehaviour
@@ -11,43 +12,13 @@ public class UnitController : MonoBehaviour
 
     private BuildingPlacer buildingPlacer;
 
+    // Input Actions
+    private InputAction touchAction;
+
     void Start()
     {
         // Find the BuildingPlacer in the scene
         buildingPlacer = FindFirstObjectByType<BuildingPlacer>();
-    }
-
-    void Update()
-    {
-        // Prevent unit movement when clicking on UI elements
-        if (UnityEngine.EventSystems.EventSystem.current != null &&
-            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() &&
-            UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
-        {
-            return;
-        }
-
-        if (isGatherMode && Input.GetMouseButtonDown(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, groundLayer))
-            {
-                Vector3 gatherPoint = hit.point;
-                GatherUnits(gatherPoint);
-            }
-        }
-
-        foreach (var unit in units)
-        {
-            if (unit != null && unit.isIdle)
-            {
-                Enemy nearestEnemy = FindNearestEnemy(unit.transform.position);
-                if (nearestEnemy != null)
-                {
-                    unit.Attack(nearestEnemy);
-                }
-            }
-        }
     }
 
     public void ToggleGatherMode()
@@ -63,7 +34,7 @@ public class UnitController : MonoBehaviour
         Debug.Log($"Gather mode: {(isGatherMode ? "ON" : "OFF")}");
     }
 
-    private void GatherUnits(Vector3 gatherPoint)
+    public void GatherUnits(Vector3 gatherPoint)
     {
         if (units.Count == 0) return;
 

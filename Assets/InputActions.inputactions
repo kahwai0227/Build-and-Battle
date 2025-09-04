@@ -1,0 +1,139 @@
+{
+    "version": 1,
+    "name": "InputActions",
+    "maps": [
+        {
+            "name": "PlaceBuildings",
+            "id": "0a2c6bcb-be0f-4b94-a569-2a3559864058",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "Value",
+                    "id": "bc923be5-e746-49f8-9c56-b629d14ea974",
+                    "expectedControlType": "Touch",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "527f16d4-6c5b-4567-9d09-1b3e8a394f02",
+                    "path": "<Touchscreen>/primaryTouch",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "CameraControl",
+            "id": "3b81356f-2f5d-402f-88f0-a9027399bea9",
+            "actions": [
+                {
+                    "name": "Pan",
+                    "type": "Value",
+                    "id": "9c584cbe-9d5a-4ae6-b04a-bf9ec445177a",
+                    "expectedControlType": "Touch",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Zoom",
+                    "type": "Value",
+                    "id": "b5058cac-48cb-4d21-90f1-c07486c999d9",
+                    "expectedControlType": "Touch",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "46bc021e-fdd0-451e-a741-f35b2a0ff72a",
+                    "path": "<Touchscreen>/primaryTouch",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pan",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "69bb6199-4b00-475c-aa0f-77a46905f6be",
+                    "path": "<Pointer>/touch",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Army",
+            "id": "aca79c89-57f7-4fa1-80da-2303a9fdb71e",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "59414b6f-9d28-4b99-a30b-a50a3a45952e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "91604d5a-9489-4800-b1e5-c74e9bd4b0b6",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Worker",
+            "id": "2484166c-f2f1-47f7-aaa6-82d2c14baebd",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "045637f9-2f0f-4df3-aae4-cb5c4998ebc9",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "860940eb-eb78-41ae-9508-cc480ae9c207",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

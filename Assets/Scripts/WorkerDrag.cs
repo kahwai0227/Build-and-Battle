@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 public class WorkerDrag : MonoBehaviour
@@ -22,11 +23,95 @@ public class WorkerDrag : MonoBehaviour
     public int lastWoodCost;
     public GameObject constructionProgressBar; // Reference to the construction progress bar object
 
-    void Start()
+    private InputAction touchAction;
+
+    void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = moveSpeed;
         townhall = GameObject.FindWithTag("Townhall");
+
+        // Initialize the InputAction for touch input
+        touchAction = new InputAction(type: InputActionType.PassThrough);
+        touchAction.AddBinding("<Touchscreen>/press"); // Touch press
+        touchAction.Enable();
+    }
+
+    void OnEnable()
+    {
+        touchAction.performed += OnTouchPerformed;
+    }
+
+    void OnDisable()
+    {
+        touchAction.performed -= OnTouchPerformed;
+    }
+
+    private void OnTouchPerformed(InputAction.CallbackContext context)
+    {
+        // Perform a raycast to check if the touch is on this worker
+        Vector2 screenPosition = Pointer.current.position.ReadValue();
+        Ray ray = Camera.main.ScreenPointToRay(screenPosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            if (hit.collider.gameObject == gameObject) // Check if the hit object is this worker
+            {
+                HandleWorkerInteraction();
+            }
+        }
+    }
+
+    private void HandleWorkerInteraction()
+    {
+        // If building, stop construction, refund 50%, and destroy building and progress bar
+        if (state == WorkerState.Collecting && currentBuilding != null && constructionCoroutine != null)
+        {
+            StopCoroutine(constructionCoroutine);
+            ResourceManager.Instance.AddGold(lastGoldCost / 2);
+            ResourceManager.Instance.AddWood(lastWoodCost / 2);
+
+            // Destroy the progress bar first
+            if (constructionProgressBar != null)
+            {
+                Destroy(constructionProgressBar);
+                constructionProgressBar = null;
+            }
+
+            // Signal cancellation to the coroutine
+            if (currentBuilding != null)
+            {
+                var placer = FindFirstObjectByType<BuildingPlacer>();
+                if (placer != null)
+                {
+                    var dict = placer.GetType().GetField("constructionCancelled", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(placer) as Dictionary<GameObject, bool>;
+                    if (dict != null && dict.ContainsKey(currentBuilding))
+                        dict[currentBuilding] = true;
+                }
+            }
+
+            Destroy(currentBuilding);
+
+            // Reset state
+            currentBuilding = null;
+            constructionCoroutine = null;
+            lastGoldCost = 0;
+            lastWoodCost = 0;
+            state = WorkerState.Idle;
+            isBusy = false;
+            if (agent != null)
+                agent.ResetPath();
+            return;
+        }
+
+        // Otherwise, cancel any other task as before
+        StopAllCoroutines();
+        state = WorkerState.Idle;
+        isBusy = false;
+        assignedResource = null;
+        isCarrying = false; // Clear carried resource
+        if (agent != null)
+            agent.ResetPath();
     }
 
     private Vector3 GetOrFindFreeBesidePoint(Vector3 targetPosition, float targetRadius, float margin = 0.5f)
@@ -199,58 +284,5 @@ public class WorkerDrag : MonoBehaviour
     public void SetConstructionProgressBar(GameObject bar)
     {
         constructionProgressBar = bar;
-    }
-
-    void OnMouseDown()
-    {
-        // If building, stop construction, refund 50%, and destroy building and progress bar
-        if (state == WorkerState.Collecting && currentBuilding != null && constructionCoroutine != null)
-        {
-            StopCoroutine(constructionCoroutine);
-            ResourceManager.Instance.AddGold(lastGoldCost / 2);
-            ResourceManager.Instance.AddWood(lastWoodCost / 2);
-
-            // Destroy the progress bar first
-            if (constructionProgressBar != null)
-            {
-                Destroy(constructionProgressBar);
-                constructionProgressBar = null;
-            }
-
-            // Signal cancellation to the coroutine
-            if (currentBuilding != null)
-            {
-                var placer = FindFirstObjectByType<BuildingPlacer>();
-                if (placer != null)
-                {
-                    var dict = placer.GetType().GetField("constructionCancelled", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                        .GetValue(placer) as Dictionary<GameObject, bool>;
-                    if (dict != null && dict.ContainsKey(currentBuilding))
-                        dict[currentBuilding] = true;
-                }
-            }
-
-            Destroy(currentBuilding);
-
-            // Reset state
-            currentBuilding = null;
-            constructionCoroutine = null;
-            lastGoldCost = 0;
-            lastWoodCost = 0;
-            state = WorkerState.Idle;
-            isBusy = false;
-            if (agent != null)
-                agent.ResetPath();
-            return;
-        }
-
-        // Otherwise, cancel any other task as before
-        StopAllCoroutines();
-        state = WorkerState.Idle;
-        isBusy = false;
-        assignedResource = null;
-        isCarrying = false; // <-- Add this line to clear carried resource
-        if (agent != null)
-            agent.ResetPath();
     }
 }

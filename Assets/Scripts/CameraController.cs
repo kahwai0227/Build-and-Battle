@@ -3,96 +3,50 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public float panSpeed = 0.5f;
-    public float minX = -50f, maxX = 50f, minZ = -50f, maxZ = 50f;
-
     public float zoomSpeed = 10f;
     public float minY = 10f, maxY = 60f; // Camera height limits
+    public float minX = -50f, maxX = 50f, minZ = -50f, maxZ = 50f;
 
     private Vector2 lastPanPosition;
-    private int panFingerId; // Touch finger ID
+    public bool IsPanning { get; private set; } = false;
 
-    private UnitController unitController;
-    private BuildingPlacer buildingPlacer;
-
-    void Start()
+    public void StartPanning(Vector2 initialPanPosition)
     {
-        // Find the UnitController and BuildingPlacer in the scene
-        unitController = FindFirstObjectByType<UnitController>();
-        buildingPlacer = FindFirstObjectByType<BuildingPlacer>();
+        IsPanning = true;
+        lastPanPosition = initialPanPosition; // Initialize the last pan position
     }
 
-    void Update()
+    public void StopPanning()
     {
-        // Disable camera control if gather mode or build mode is active
-        if ((unitController != null && unitController.isGatherMode) ||
-            (buildingPlacer != null && buildingPlacer.IsBuildingSelected))
-            return;
-
-        // Touch pan for mobile
-        if (Input.touchCount == 1)
-        {
-            Touch touch = Input.GetTouch(0);
-
-            if (touch.phase == TouchPhase.Began)
-            {
-                lastPanPosition = touch.position;
-                panFingerId = touch.fingerId;
-            }
-            else if (touch.phase == TouchPhase.Moved && touch.fingerId == panFingerId)
-            {
-                PanCamera(touch.position);
-                lastPanPosition = touch.position;
-            }
-        }
-
-        // Touch pinch zoom for mobile
-        if (Input.touchCount == 2)
-        {
-            Touch touch0 = Input.GetTouch(0);
-            Touch touch1 = Input.GetTouch(1);
-
-            float prevDist = (touch0.position - touch0.deltaPosition - (touch1.position - touch1.deltaPosition)).magnitude;
-            float currDist = (touch0.position - touch1.position).magnitude;
-            float delta = currDist - prevDist;
-
-            ZoomCamera(-delta * zoomSpeed * Time.deltaTime * 0.1f);
-        }
-
-        // Mouse drag pan for Editor
-        #if UNITY_EDITOR
-        if (Input.GetMouseButtonDown(0))
-            lastPanPosition = Input.mousePosition;
-        if (Input.GetMouseButton(0))
-        {
-            PanCamera((Vector2)Input.mousePosition);
-            lastPanPosition = Input.mousePosition;
-        }
-
-        // Mouse wheel zoom for Editor
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (Mathf.Abs(scroll) > 0.01f)
-        {
-            ZoomCamera(-scroll * zoomSpeed * 100f * Time.deltaTime);
-        }
-        #endif
+        IsPanning = false;
     }
 
-    void PanCamera(Vector2 newPanPosition)
+    public void PanCamera(Vector2 newPanPosition)
     {
+        if (!IsPanning) return;
+
+        // Calculate the delta between the current and last pan positions
         Vector2 delta = newPanPosition - lastPanPosition;
-        Vector3 move = new Vector3(-delta.x * panSpeed * Time.deltaTime, 0, -delta.y * panSpeed * Time.deltaTime);
 
+        // Apply the delta to move the camera
+        Vector3 move = new Vector3(-delta.x * panSpeed, 0, -delta.y * panSpeed);
+
+        // Clamp the new position within the defined boundaries
         Vector3 newPos = transform.position + move;
         newPos.x = Mathf.Clamp(newPos.x, minX, maxX);
         newPos.z = Mathf.Clamp(newPos.z, minZ, maxZ);
+        newPos.y = transform.position.y; // Keep the Y position unchanged
 
         transform.position = newPos;
+
+        // Update the last pan position
+        lastPanPosition = newPanPosition;
     }
 
-    void ZoomCamera(float delta)
+    public void ZoomCamera(float delta)
     {
         Vector3 pos = transform.position;
-        pos.y = Mathf.Clamp(pos.y + delta, minY, maxY);
+        pos.y = Mathf.Clamp(pos.y - delta * zoomSpeed * Time.deltaTime, minY, maxY);
         transform.position = pos;
     }
 }

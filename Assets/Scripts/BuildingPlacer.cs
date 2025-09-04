@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BuildingPlacer : MonoBehaviour
 {
@@ -49,105 +50,79 @@ public class BuildingPlacer : MonoBehaviour
         Debug.Log("Construction mode disabled.");
     }
 
-    void Update()
+    public void PlaceBuilding(RaycastHit hit)
     {
-        if (!IsBuildingSelected)
-        {
-            return;
-        }
+        // Get the size of the building's collider
+        Collider buildingCollider = buildingPrefab.GetComponent<Collider>();
+        Vector3 size = buildingCollider.bounds.size;
 
-        if (UnityEngine.EventSystems.EventSystem.current != null &&
-            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() &&
-            UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
-        {
-            return;
-        }
+        // Add margin to the size for overlap check
+        Vector3 margin = new Vector3(placementMargin, placementMargin, placementMargin);
+        Vector3 checkSize = (size / 2f) + margin;
 
-        if (Input.GetMouseButtonDown(0))
+        // Calculate the correct center for overlap check
+        float yOffset = size.y / 2f;
+        Vector3 center = hit.point + Vector3.up * yOffset;
+
+        // Check for overlap with other buildings
+        Collider[] overlaps = Physics.OverlapBox(center, checkSize, Quaternion.identity, LayerMask.GetMask("Building"));
+        if (overlaps.Length == 0)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            // Check resource cost
+            if (ResourceManager.Instance.gold >= goldCost && ResourceManager.Instance.wood >= woodCost)
             {
-                if (hit.collider.CompareTag("Ground"))
+                WorkerDrag worker = FindNearestIdleWorker(hit.point);
+                if (worker == null)
                 {
-                    // Get the size of the building's collider
-                    Collider buildingCollider = buildingPrefab.GetComponent<Collider>();
-                    Vector3 size = buildingCollider.bounds.size;
-
-                    // Add margin to the size for overlap check
-                    Vector3 margin = new Vector3(placementMargin, placementMargin, placementMargin);
-                    Vector3 checkSize = (size / 2f) + margin;
-
-                    // Calculate the correct center for overlap check
-                    float yOffset = size.y / 2f;
-                    Vector3 center = hit.point + Vector3.up * yOffset;
-
-                    // Check for overlap with other buildings
-                    Collider[] overlaps = Physics.OverlapBox(center, checkSize, Quaternion.identity, LayerMask.GetMask("Building"));
-                    if (overlaps.Length == 0)
-                    {
-                        // Check resource cost
-                        if (ResourceManager.Instance.gold >= goldCost && ResourceManager.Instance.wood >= woodCost)
-                        {
-                            WorkerDrag worker = FindNearestIdleWorker(hit.point);
-                            if (worker == null)
-                            {
-                                Debug.Log("No available worker to build!");
-                                return;
-                            }
-                            worker.isBusy = true;
-
-                            // Get the building's collider size
-                            float buildingRadius = Mathf.Max(size.x, size.z) / 2f;
-                            float workerMargin = 0.2f; // Adjust as needed
-
-                            // Calculate a point beside the building (to the right of the building)
-                            Vector3 direction = (worker.transform.position - hit.point).normalized;
-                            if (direction == Vector3.zero) direction = Vector3.right; // fallback if worker is at the same spot
-                            Vector3 besidePoint = hit.point + direction * (buildingRadius + workerMargin);
-
-                            worker.GoTo(besidePoint);
-
-                            // Deduct resources
-                            ResourceManager.Instance.gold -= goldCost;
-                            ResourceManager.Instance.wood -= woodCost;
-
-                            // Instantiate at hit.point first
-                            GameObject building = Instantiate(buildingPrefab, hit.point, Quaternion.identity);
-
-                            // Get the collider from the instantiated building
-                            Collider col = building.GetComponent<Collider>();
-                            if (col != null)
-                            {
-                                // Move the building up so its base sits on the ground
-                                float buildingYOffset = col.bounds.extents.y;
-                                building.transform.position = new Vector3(hit.point.x, hit.point.y + buildingYOffset, hit.point.z);
-
-                                // Calculate a point beside the building (after building is placed)
-                                float buildingRadiusFinal = Mathf.Max(col.bounds.extents.x, col.bounds.extents.z);
-                                float workerMarginFinal = 1.0f; // Increase margin for larger buildings
-                                Vector3 directionFinal = (worker.transform.position - building.transform.position).normalized;
-                                if (directionFinal == Vector3.zero) directionFinal = Vector3.right;
-                                Vector3 besidePointFinal = building.transform.position + directionFinal * (buildingRadiusFinal + workerMarginFinal);
-
-                                worker.GoTo(besidePointFinal);
-
-                                // Start construction coroutine, pass besidePoint
-                                Coroutine coroutine = StartCoroutine(ConstructBuilding(building, worker, besidePointFinal));
-                                worker.StartConstruction(building, coroutine, goldCost, woodCost);
-                            }
-                        }
-                        else
-                        {
-                            Debug.Log("Not enough resources to build!");
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("Cannot place building here: space is occupied or too close to another building.");
-                    }
+                    Debug.Log("No available worker to build!");
+                    return;
                 }
+                worker.isBusy = true;
+
+                // Get the building's collider size
+                float buildingRadius = Mathf.Max(size.x, size.z) / 2f;
+                float workerMargin = 0.2f; // Adjust as needed
+
+                // Calculate a point beside the building (to the right of the building)
+                Vector3 direction = (worker.transform.position - hit.point).normalized;
+                if (direction == Vector3.zero) direction = Vector3.right; // fallback if worker is at the same spot
+                Vector3 besidePoint = hit.point + direction * (buildingRadius + workerMargin);
+
+                worker.GoTo(besidePoint);
+
+                // Deduct resources
+                ResourceManager.Instance.gold -= goldCost;
+                ResourceManager.Instance.wood -= woodCost;
+
+                // Instantiate the building
+                GameObject building = Instantiate(buildingPrefab, hit.point, Quaternion.identity);
+
+                // Adjust the building's Y position to sit on the ground
+                if (building.TryGetComponent(out Collider col))
+                {
+                    float buildingYOffset = col.bounds.extents.y; // Half the height of the building
+                    building.transform.position = new Vector3(hit.point.x, hit.point.y + buildingYOffset, hit.point.z);
+                }
+
+                // Calculate a point beside the building (after building is placed)
+                float buildingRadiusFinal = Mathf.Max(col.bounds.extents.x, col.bounds.extents.z);
+                float workerMarginFinal = 1.0f; // Increase margin for larger buildings
+                Vector3 directionFinal = (worker.transform.position - building.transform.position).normalized;
+                if (directionFinal == Vector3.zero) directionFinal = Vector3.right;
+                Vector3 besidePointFinal = building.transform.position + directionFinal * (buildingRadiusFinal + workerMarginFinal);
+                worker.GoTo(besidePointFinal);
+                // Start construction coroutine, pass besidePoint
+                Coroutine coroutine = StartCoroutine(ConstructBuilding(building, worker, besidePointFinal));
+                worker.StartConstruction(building, coroutine, goldCost, woodCost);
             }
+            else
+            {
+                Debug.Log("Not enough resources to build!");
+            }
+        }
+        else
+        {
+            Debug.Log("Cannot place building here: space is occupied or too close to another building.");
         }
     }
 
@@ -196,7 +171,10 @@ public class BuildingPlacer : MonoBehaviour
         {
             if (constructionCancelled[building])
             {
-                // Free up the worker if construction is canceled
+                // Clean up if canceled
+                if (barObj != null) Destroy(barObj);
+
+                // Free up the worker
                 worker.isBusy = false;
                 worker.state = WorkerDrag.WorkerState.Idle;
                 worker.currentBuilding = null;
@@ -205,7 +183,7 @@ public class BuildingPlacer : MonoBehaviour
                 worker.lastWoodCost = 0;
                 worker.constructionProgressBar = null;
 
-                yield break;
+                yield break; // Exit the coroutine
             }
             yield return null;
         }
@@ -227,7 +205,7 @@ public class BuildingPlacer : MonoBehaviour
                 worker.lastWoodCost = 0;
                 worker.constructionProgressBar = null;
 
-                yield break;
+                yield break; // Exit the coroutine
             }
             elapsed += Time.deltaTime;
             if (slider != null)

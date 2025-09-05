@@ -126,10 +126,28 @@ public class InputManager : MonoBehaviour
         if (isTouchStarted)
         {
             if (UnityEngine.EventSystems.EventSystem.current != null &&
-                UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
             {
-                Debug.Log("Touch started on a UI element.");
-                isTouchingUI = true;
+            // Try to get the UI element under the pointer
+            var pointerEventData = new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current)
+            {
+                position = GetPointerPosition()
+            };
+
+            var results = new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();
+            UnityEngine.EventSystems.EventSystem.current.RaycastAll(pointerEventData, results);
+
+            if (results.Count > 0)
+            {
+                var uiElement = results[0].gameObject;
+                Debug.Log($"Touch started on UI element: {uiElement.name}");
+            }
+            else
+            {
+                Debug.Log("Touch started on a UI element, but could not identify which.");
+            }
+
+            isTouchingUI = true;
             }
             else
             {

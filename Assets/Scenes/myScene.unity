@@ -1197,7 +1197,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   attackRadius: 50
-  isGatherMode: 1
+  isGatherMode: 0
 --- !u!114 &304831230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1236,8 +1236,8 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings:
     - m_Name: 
-      m_Id: e968b327-a3c6-428a-a01a-84479b795c04
-      m_Path: <Touchscreen>/delta
+      m_Id: 2ebabeef-f434-4e66-917e-192be0316031
+      m_Path: <Mouse>/scroll
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -1394,8 +1394,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7533cee7f8b36946a5c14589fb075e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panSpeed: 50
-  zoomSpeed: 100
+  panSpeed: 0.5
+  zoomSpeed: 1
   minY: 10
   maxY: 300
   minX: -1000
@@ -3688,7 +3688,7 @@ CanvasGroup:
   m_Enabled: 1
   m_Alpha: 0
   m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

@@ -94,4 +94,19 @@ public class UnitController : MonoBehaviour
 
         return nearestEnemy;
     }
+
+    void Update()
+    {
+        foreach (Unit unit in units)
+        {
+            if (unit != null)
+            {
+                Enemy nearestEnemy = FindNearestEnemy(unit.transform.position);
+                if (nearestEnemy != null)
+                {
+                    unit.Attack(nearestEnemy);
+                }
+            }
+        }
+    }
 }
